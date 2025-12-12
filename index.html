@@ -48,42 +48,6 @@
     <!-- 3. Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Schema Markup for Event -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "EducationEvent",
-      "name": "MPSC/UPSC Strategy Webinar",
-      "description": "A free webinar on the new MPSC/UPSC descriptive pattern and preparation strategy by Dr. Vishal Bhedurkar.",
-      "startDate": "2025-12-15T10:00:00+05:30",
-      "endDate": "2025-12-15T12:00:00+05:30",
-      "eventStatus": "https://schema.org/EventScheduled",
-      "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
-      "location": {
-        "@type": "VirtualLocation",
-        "url": "https://dnyanjyoti-education.vercel.app/"
-      },
-      "image": [
-        "https://www.dnyanjyoti.com/wp-content/uploads/2025/04/MD-Photo.jpg"
-      ],
-      "organizer": {
-        "@type": "Organization",
-        "name": "Dnyanjyoti Education",
-        "url": "https://www.dnyanjyoti.com"
-      },
-      "performer": {
-        "@type": "Person",
-        "name": "Dr. Vishal Bhedurkar"
-      },
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "INR",
-        "availability": "https://schema.org/InStock"
-      }
-    }
-    </script>
-
     <style>
         body { font-family: sans-serif; }
         .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #EA580C; animation: spin 1s linear infinite; }
@@ -115,7 +79,7 @@
             CheckCircle, Play, Pause, MessageCircle, Send, ChevronRight, 
             BookOpen, Clock, Award, Download, ShieldCheck, Settings, 
             Lock, Unlock, Video, X, Star, Zap, Target, Book, Brain, Scale, FileText,
-            Eye, EyeOff, RotateCcw, Instagram, Facebook
+            Eye, EyeOff, RotateCcw, Instagram, Facebook, Users, ArrowLeft, Trash2, Edit2
         } from 'lucide-react';
 
         // Safe Database Import
@@ -124,14 +88,19 @@
 
         async function initApp() {
             try {
+                // Try to import the config. If it fails, catch block will run.
                 const firebaseConfig = await import('./firebase-config.js');
                 db = firebaseConfig.db;
                 const fs = await import('firebase/firestore');
                 firestoreFuncs = { ...fs };
-                renderReactApp();
+                
+                // If db is undefined (e.g., config file empty or export missing), throw error
+                if (!db) throw new Error("Database object is undefined from config file.");
+
+                renderReactApp(false);
             } catch (err) {
                 console.error("Firebase Load Error:", err);
-                console.warn("Running in Offline/Demo Mode");
+                console.warn("Running in Offline/Demo Mode. Database features will be disabled.");
                 renderReactApp(true);
             }
         }
@@ -206,7 +175,12 @@
             const [adminPanelOpen, setAdminPanelOpen] = useState(false);
             const [isSubmitting, setIsSubmitting] = useState(false);
             const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-            const [dbPasskey, setDbPasskey] = useState(null); // Stores the real passkey from DB
+            const [dbPasskey, setDbPasskey] = useState(null); 
+
+            // Leads Data
+            const [leads, setLeads] = useState([]);
+            const [isLoadingLeads, setIsLoadingLeads] = useState(false);
+            const [editingLead, setEditingLead] = useState(null);
 
             useEffect(() => {
                 if (isOffline || !db) return;
@@ -214,10 +188,7 @@
                     const unsubscribe = firestoreFuncs.onSnapshot(firestoreFuncs.doc(db, "settings", "global"), (docSnap) => {
                         if (docSnap.exists()) {
                             const data = docSnap.data();
-                            // Separate secure passkey from general settings
                             setDbPasskey(data.adminPasskey || null);
-                            
-                            // Merge other settings with defaults
                             setSettings(prev => ({
                                 ...prev,
                                 theme: data.theme || prev.theme,
@@ -225,7 +196,6 @@
                                 socialLinks: { ...prev.socialLinks, ...data.socialLinks }
                             }));
                         } else {
-                            // Document doesn't exist yet, we are in "First Run" mode
                             setDbPasskey(null);
                         }
                     });
@@ -233,15 +203,64 @@
                 } catch (e) { console.warn("Live sync failed", e); }
             }, [isOffline]);
 
+            const fetchLeads = async () => {
+                if (isOffline) return;
+                setIsLoadingLeads(true);
+                try {
+                    let q;
+                    try {
+                        q = firestoreFuncs.query(
+                            firestoreFuncs.collection(db, "leads"), 
+                            firestoreFuncs.orderBy("registeredAt", "desc")
+                        );
+                    } catch(e) {
+                        q = firestoreFuncs.collection(db, "leads");
+                    }
+                    
+                    const querySnapshot = await firestoreFuncs.getDocs(q);
+                    const leadsData = querySnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    setLeads(leadsData);
+                } catch (e) {
+                    console.error(e);
+                    alert("Error fetching leads. Make sure Firestore rules allow reads!");
+                } finally {
+                    setIsLoadingLeads(false);
+                }
+            };
+
+            const handleDeleteLead = async (id) => {
+                if (!confirm("Are you sure you want to delete this registration?")) return;
+                try {
+                    await firestoreFuncs.deleteDoc(firestoreFuncs.doc(db, "leads", id));
+                    setLeads(leads.filter(l => l.id !== id));
+                } catch(e) { alert("Error deleting: " + e.message); }
+            };
+
+            const handleEditLead = async (lead) => {
+                const newName = prompt("Edit Name:", lead.name);
+                if (newName === null) return;
+                const newEmail = prompt("Edit Email:", lead.email);
+                if (newEmail === null) return;
+                const newPhone = prompt("Edit Phone:", lead.phone);
+                if (newPhone === null) return;
+
+                try {
+                    await firestoreFuncs.updateDoc(firestoreFuncs.doc(db, "leads", lead.id), {
+                        name: newName, email: newEmail, phone: newPhone
+                    });
+                    setLeads(leads.map(l => l.id === lead.id ? {...l, name: newName, email: newEmail, phone: newPhone} : l));
+                } catch(e) { alert("Error updating: " + e.message); }
+            };
+
             const handleAdminLoginClick = () => {
                 if (isAdmin) {
-                    // Toggle panel if already logged in
                     setAdminPanelOpen(!adminPanelOpen);
                 } else {
-                    // Show login modal
                     setShowLoginModal(true);
                     setLoginPasskey('');
-                    // Check if we need to set a new passkey
                     setIsSettingNewPasskey(!dbPasskey); 
                 }
             };
@@ -250,7 +269,6 @@
                 if (!loginPasskey.trim()) return alert("Please enter a passkey.");
 
                 if (isSettingNewPasskey) {
-                    // First time setup: Save the new passkey to DB
                     if (isOffline) return alert("Cannot set passkey offline.");
                     try {
                         await firestoreFuncs.setDoc(firestoreFuncs.doc(db, "settings", "global"), { adminPasskey: loginPasskey.trim() }, { merge: true });
@@ -262,7 +280,6 @@
                         alert("Error saving passkey: " + e.message);
                     }
                 } else {
-                    // Login attempt
                     if (loginPasskey === dbPasskey) {
                         setIsAdmin(true);
                         setAdminPanelOpen(true);
@@ -286,14 +303,11 @@
                 if (isOffline) return alert("Offline Mode: Cannot reset.");
                 
                 try {
-                    // Reset local state to defaults (preserving passkey)
                     const resetData = {
                         ...DEFAULT_SETTINGS,
-                        adminPasskey: dbPasskey // Keep the existing passkey
+                        adminPasskey: dbPasskey 
                     };
                     setSettings(DEFAULT_SETTINGS);
-                    
-                    // Save to DB
                     await firestoreFuncs.setDoc(firestoreFuncs.doc(db, "settings", "global"), resetData, { merge: true });
                     alert("Settings have been reset to defaults.");
                 } catch (err) { alert("Error resetting: " + err.message); }
@@ -335,7 +349,7 @@
             };
 
             return (
-                <div style={{ '--primary': settings.theme.primary, '--accent': settings.theme.accent }} className="animate-fade-in">
+                <div style={{ '--primary': settings.theme.primary, '--accent': settings.theme.accent }} className="animate-fade-in font-sans">
                     
                     {/* Admin Toggle */}
                     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
@@ -382,7 +396,7 @@
                             </div>
                         )}
 
-                        {/* Admin Panel (Only shown if isAdmin is true) */}
+                        {/* Admin Panel */}
                         {isAdmin && adminPanelOpen && (
                             <div className="absolute bottom-16 right-0 bg-white p-0 rounded-2xl shadow-2xl border border-slate-200 w-80 overflow-hidden mb-2 animate-fade-in">
                                 <div className="bg-slate-900 p-4 flex justify-between items-center text-white">
@@ -393,14 +407,22 @@
                                     {isOffline && <p className="text-red-500 text-xs font-bold">OFFLINE MODE: Cannot Save</p>}
                                     
                                     <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-                                        <span className="text-xs font-bold text-slate-400 uppercase">Actions</span>
+                                        <span className="text-xs font-bold text-slate-400 uppercase">Site Settings</span>
                                         <button 
                                             onClick={resetSettings}
                                             className="flex items-center gap-1 text-[10px] bg-red-50 text-red-600 px-2 py-1 rounded hover:bg-red-100 transition-colors"
                                         >
-                                            <RotateCcw size={10} /> Reset Defaults
+                                            <RotateCcw size={10} /> Reset
                                         </button>
                                     </div>
+
+                                    {/* Link to Leads Dashboard */}
+                                    <button 
+                                        onClick={() => { setCurrentPage('admin-dashboard'); fetchLeads(); setAdminPanelOpen(false); }}
+                                        className="w-full bg-[var(--primary)] text-white py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-sm shadow-md hover:brightness-110 mb-4 mt-2"
+                                    >
+                                        <Users size={16} /> Manage Student Leads
+                                    </button>
 
                                     <div>
                                         <label className="text-xs font-bold text-slate-400 uppercase">Primary Color</label>
@@ -416,7 +438,6 @@
                                             <span className="text-xs bg-slate-100 px-2 py-1 rounded">{settings.theme.accent}</span>
                                         </div>
                                     </div>
-                                    {/* Admin Passkey field removed from here as requested for security */}
                                     <div>
                                         <label className="text-xs font-bold text-slate-400 uppercase">WhatsApp Link</label>
                                         <input type="text" value={settings.socialLinks.whatsapp} onChange={(e) => saveSettings({ ...settings, socialLinks: { ...settings.socialLinks, whatsapp: e.target.value } })} className="w-full text-xs p-2 border rounded mt-1 outline-none focus:border-blue-500" placeholder="https://..." />
@@ -442,7 +463,157 @@
                         )}
                     </div>
 
-                    {currentPage === 'landing' ? (
+                    {/* --- ROUTING LOGIC --- */}
+                    {currentPage === 'admin-dashboard' ? (
+                        <div className="min-h-screen bg-slate-50 p-4 md:p-8">
+                            <div className="max-w-6xl mx-auto">
+                                <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                                    <div>
+                                        <h1 className="text-2xl font-bold text-[var(--primary)] flex items-center gap-2">
+                                            <Users className="text-[var(--accent)]" /> Student Registrations
+                                        </h1>
+                                        <p className="text-slate-500">Manage all webinar leads here.</p>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <div className="bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-200">
+                                            <span className="block text-xs text-slate-400 font-bold uppercase">Total Leads</span>
+                                            <span className="text-xl font-bold text-[var(--primary)]">{leads.length}</span>
+                                        </div>
+                                        <button 
+                                            onClick={() => setCurrentPage('landing')} 
+                                            className="px-4 py-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 text-slate-700 font-medium flex items-center gap-2"
+                                        >
+                                            <ArrowLeft size={16} /> Back to Site
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                                    {isLoadingLeads ? (
+                                        <div className="p-12 text-center text-slate-500">Loading leads...</div>
+                                    ) : (
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left border-collapse">
+                                                <thead>
+                                                    <tr className="bg-slate-100 border-b border-slate-200">
+                                                        <th className="p-4 font-semibold text-slate-600 text-sm">Name</th>
+                                                        <th className="p-4 font-semibold text-slate-600 text-sm">Contact Details</th>
+                                                        <th className="p-4 font-semibold text-slate-600 text-sm">Date</th>
+                                                        <th className="p-4 font-semibold text-slate-600 text-sm text-right">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {leads.map((lead) => (
+                                                        <tr key={lead.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                                            <td className="p-4 font-medium text-slate-800">{lead.name}</td>
+                                                            <td className="p-4 text-sm text-slate-600">
+                                                                <div className="flex flex-col">
+                                                                    <span>{lead.email}</span>
+                                                                    <span className="text-xs text-slate-400">{lead.phone}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="p-4 text-sm text-slate-500">
+                                                                {new Date(lead.registeredAt).toLocaleDateString()}
+                                                            </td>
+                                                            <td className="p-4 text-right">
+                                                                <div className="flex items-center justify-end gap-2">
+                                                                    <button 
+                                                                        onClick={() => handleEditLead(lead)} 
+                                                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" 
+                                                                        title="Edit"
+                                                                    >
+                                                                        <Edit2 size={16} />
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={() => handleDeleteLead(lead.id)} 
+                                                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" 
+                                                                        title="Delete"
+                                                                    >
+                                                                        <Trash2 size={16} />
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                    {leads.length === 0 && (
+                                                        <tr>
+                                                            <td colSpan="4" className="p-8 text-center text-slate-400">No registrations found.</td>
+                                                        </tr>
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ) : currentPage === 'thankyou' ? (
+                        <div className="min-h-screen py-12 px-6 flex flex-col items-center justify-center bg-[var(--primary)] text-white relative overflow-hidden animate-fade-in">
+                            {/* Decorative BG */}
+                            <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
+                            
+                            <div className="max-w-4xl w-full bg-white text-slate-900 rounded-3xl shadow-2xl overflow-hidden relative z-10">
+                                {/* Header */}
+                                <div className="bg-[var(--primary)] p-10 text-center relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+                                    <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl ring-4 ring-green-400/30 animate-bounce">
+                                        <CheckCircle className="text-white" size={48} />
+                                    </div>
+                                    <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2">Registration Successful!</h1>
+                                    <p className="text-blue-100 text-lg">Your seat for the webinar has been reserved.</p>
+                                </div>
+
+                                <div className="p-8 md:p-12">
+                                    <div className="grid md:grid-cols-2 gap-12">
+                                        {/* Left: Video */}
+                                        <div className="flex flex-col justify-center">
+                                            <h3 className="font-bold text-xl text-[var(--primary)] mb-4 flex items-center gap-2">
+                                                <Video size={20} className="text-[var(--accent)]"/> Watch this first
+                                            </h3>
+                                            <div className="aspect-video rounded-2xl overflow-hidden shadow-lg border border-slate-200">
+                                                <CustomVideoPlayer videoSource={settings.videoConfig} />
+                                            </div>
+                                        </div>
+
+                                        {/* Right: Steps */}
+                                        <div className="flex flex-col justify-center">
+                                            <h3 className="font-bold text-xl text-[var(--primary)] mb-6">Next Steps:</h3>
+                                            <div className="space-y-6">
+                                                <div className="flex gap-4">
+                                                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">1</div>
+                                                    <div>
+                                                        <p className="font-medium text-slate-800">Join the WhatsApp Group</p>
+                                                        <p className="text-sm text-slate-500 mb-3">Get the meeting link 15 mins before start.</p>
+                                                        <a href={settings.socialLinks.whatsapp} target="_blank" className="inline-flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 rounded-lg font-bold hover:brightness-110 transition-all shadow-md shadow-green-200">
+                                                            <MessageCircle size={18} /> Join Group
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-4">
+                                                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">2</div>
+                                                    <div>
+                                                        <p className="font-medium text-slate-800">Follow us for Updates</p>
+                                                        <p className="text-sm text-slate-500 mb-3">Daily study tips and current affairs.</p>
+                                                        <div className="flex gap-2">
+                                                            <a href={settings.socialLinks.instagram} target="_blank" className="p-2 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white rounded-lg hover:opacity-90 transition-all shadow-sm">
+                                                                <Instagram size={20} />
+                                                            </a>
+                                                            <a href={settings.socialLinks.facebook} target="_blank" className="p-2 bg-[#1877F2] text-white rounded-lg hover:brightness-110 transition-all shadow-sm">
+                                                                <Facebook size={20} />
+                                                            </a>
+                                                            <a href={settings.socialLinks.telegram} target="_blank" className="p-2 bg-[#0088cc] text-white rounded-lg hover:brightness-110 transition-all shadow-sm">
+                                                                <Send size={20} />
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
                         <div>
                             {/* HERO */}
                             <section className="relative pt-24 pb-32 px-6 md:px-12 bg-[var(--primary)] text-white overflow-hidden transition-colors duration-500">
@@ -695,34 +866,6 @@
                                     </form>
                                 </div>
                             </section>
-                        </div>
-                    ) : (
-                        <div className="min-h-screen py-12 px-6 flex flex-col items-center justify-center bg-slate-50 animate-fade-in">
-                            <div className="max-w-2xl w-full text-center">
-                                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-100">
-                                    <CheckCircle className="text-green-600" size={40} />
-                                </div>
-                                <h1 className="text-4xl font-bold text-[var(--primary)] mb-8">Registration Successful!</h1>
-                                
-                                <div className="aspect-video w-full mb-10 rounded-2xl overflow-hidden shadow-2xl bg-black">
-                                    <CustomVideoPlayer videoSource={settings.videoConfig} />
-                                </div>
-
-                                <div className="space-y-4 max-w-md mx-auto">
-                                    <a href={settings.socialLinks.whatsapp} target="_blank" className="block w-full py-4 bg-[#25D366] text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-[#20bd5a] transition-all shadow-lg shadow-green-500/20">
-                                        <MessageCircle size={24} /> Join WhatsApp Group
-                                    </a>
-                                    <a href={settings.socialLinks.telegram} target="_blank" className="block w-full py-4 bg-[#0088cc] text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-[#0077b3] transition-all shadow-lg shadow-blue-500/20">
-                                        <Send size={24} /> Join Telegram Channel
-                                    </a>
-                                    <a href={settings.socialLinks.instagram} target="_blank" className="block w-full py-4 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-pink-500/20">
-                                        <Instagram size={24} /> Follow on Instagram
-                                    </a>
-                                    <a href={settings.socialLinks.facebook} target="_blank" className="block w-full py-4 bg-[#1877F2] text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-[#1559b3] transition-all shadow-lg shadow-blue-600/20">
-                                        <Facebook size={24} /> Follow on Facebook
-                                    </a>
-                                </div>
-                            </div>
                         </div>
                     )}
                 </div>
