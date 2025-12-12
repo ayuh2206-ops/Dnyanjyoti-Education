@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import saveSettings from '../lib/saveSettings';
 import { 
   CheckCircle, 
   Play, 
@@ -595,6 +596,26 @@ export default function HomePage() {
   const [theme, setTheme] = useState(DEFAULT_THEME);
   const [videoConfig, setVideoConfig] = useState(DEFAULT_VIDEO);
   const [socialLinks, setSocialLinks] = useState(DEFAULT_SOCIAL);
+
+  // Persist admin changes to Firestore (debounced)
+  useEffect(() => {
+    let mounted = true;
+    // Only save when admin is logged in (simulated) to avoid anonymous writes
+    if (!isAdmin) return;
+
+    const payload = { theme, videoConfig, socialLinks };
+    const id = setTimeout(() => {
+      if (!mounted) return;
+      saveSettings(payload).catch(() => {
+        // swallow; console logs in helper
+      });
+    }, 800);
+
+    return () => {
+      mounted = false;
+      clearTimeout(id);
+    };
+  }, [theme, videoConfig, socialLinks, isAdmin]);
 
   const handleRegister = (e: any) => {
     e.preventDefault();
