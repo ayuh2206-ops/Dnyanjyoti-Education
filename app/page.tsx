@@ -175,26 +175,12 @@ const LandingPage = ({ onRegister, theme }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <div className="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-[var(--accent)] bg-opacity-10 text-[var(--accent)] font-bold text-xs uppercase tracking-widest mb-8 border border-[var(--accent)] border-opacity-20 backdrop-blur-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--accent)] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--accent)]"></span>
-              </span>
-              Live Exclusive Webinar
-            </div>
-
-            {/* Large orange pill with flickering red text */}
-            <div className="flex justify-center mb-8">
-              <div className="w-[320px] md:w-[560px] h-8 md:h-10 bg-[var(--accent)] rounded-full flex items-center justify-center">
-                <span className="glow-flicker">Exclusive Free Webinar</span>
+            {/* Hero pill (single) — matches provided design */}
+            <div className="flex justify-center mt-6 mb-6">
+              <div className="hero-pill">
+                <span className="glow-flicker uppercase tracking-widest">Exclusive Webinar</span>
               </div>
             </div>
-              {/* Hero pill (single) — matches provided design */}
-              <div className="flex justify-center mb-8">
-                <div className="hero-pill">
-                  <span className="glow-flicker uppercase tracking-widest">Exclusive Webinar</span>
-                </div>
-              </div>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
               Conquer the Fear of the <br className="hidden md:block" />
