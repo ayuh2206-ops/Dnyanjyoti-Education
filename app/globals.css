@@ -9,16 +9,17 @@
 
 /* Flickering glow animation for headline pill text */
 .glow-flicker {
-  color: #ff2b2b;
-  font-weight: 700;
-  text-shadow: 0 0 6px rgba(255,43,43,0.9), 0 0 18px rgba(255,43,43,0.6);
+  color: var(--accent);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 6px rgba(234,88,12,0.95), 0 0 18px rgba(234,88,12,0.55);
   -webkit-text-stroke: 0.0px transparent;
   animation: flicker 1.8s linear infinite;
 }
 
 @keyframes flicker {
   0%, 18%, 22%, 25%, 53%, 100% {
-    text-shadow: 0 0 6px rgba(255,43,43,0.95), 0 0 20px rgba(255,43,43,0.6);
+    text-shadow: 0 0 6px rgba(234,88,12,0.95), 0 0 20px rgba(234,88,12,0.55);
     opacity: 1;
   }
   20%, 24%, 55% {
@@ -26,7 +27,19 @@
     opacity: 0.85;
   }
   23% {
-    text-shadow: 0 0 2px rgba(255,43,43,0.5);
+    text-shadow: 0 0 2px rgba(234,88,12,0.5);
     opacity: 0.95;
   }
+}
+
+/* Hero pill container styling to match design */
+.hero-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 1.25rem;
+  border-radius: 9999px;
+  background: rgba(2,6,23,0.45);
+  border: 2px solid rgba(234,88,12,0.18);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.25);
 }

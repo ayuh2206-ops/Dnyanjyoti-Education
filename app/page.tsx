@@ -189,6 +189,12 @@ const LandingPage = ({ onRegister, theme }) => {
                 <span className="glow-flicker">Exclusive Free Webinar</span>
               </div>
             </div>
+              {/* Hero pill (single) — matches provided design */}
+              <div className="flex justify-center mb-8">
+                <div className="hero-pill">
+                  <span className="glow-flicker uppercase tracking-widest">Exclusive Webinar</span>
+                </div>
+              </div>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
               Conquer the Fear of the <br className="hidden md:block" />
