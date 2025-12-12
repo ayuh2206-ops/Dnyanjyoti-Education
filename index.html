@@ -3,8 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dnyanjyoti Education</title>
     
+    <!-- SEO Meta Tags -->
+    <title>MPSC/UPSC Coaching Pune | Free Webinar by Dnyanjyoti Education</title>
+    <meta name="description" content="Join the best MPSC & UPSC coaching in Pune. Attend Dr. Vishal Bhedurkar's FREE webinar on the new descriptive pattern, syllabus, and strategy. 1 Lakh+ students guided. Register now!">
+    <meta name="keywords" content="MPSC coaching Pune, UPSC classes Pune, MPSC syllabus 2025, UPSC preparation strategy, Civil Services Exam guidance, Dr. Vishal Bhedurkar, Dnyanjyoti Education, competitive exam webinar">
+    <meta name="author" content="Dnyanjyoti Education">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph for Social Sharing -->
+    <meta property="og:title" content="Unlock MPSC/UPSC Success | Free Webinar">
+    <meta property="og:description" content="Master the new descriptive pattern with Dr. Vishal Bhedurkar. Register for the free webinar today!">
+    <meta property="og:image" content="https://www.dnyanjyoti.com/wp-content/uploads/2025/04/MD-Photo.jpg">
+    <meta property="og:url" content="https://dnyanjyoti-education.vercel.app/">
+    <meta property="og:type" content="website">
+
     <!-- 1. Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -34,6 +47,42 @@
 
     <!-- 3. Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Schema Markup for Event -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationEvent",
+      "name": "MPSC/UPSC Strategy Webinar",
+      "description": "A free webinar on the new MPSC/UPSC descriptive pattern and preparation strategy by Dr. Vishal Bhedurkar.",
+      "startDate": "2025-12-15T10:00:00+05:30",
+      "endDate": "2025-12-15T12:00:00+05:30",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+      "location": {
+        "@type": "VirtualLocation",
+        "url": "https://dnyanjyoti-education.vercel.app/"
+      },
+      "image": [
+        "https://www.dnyanjyoti.com/wp-content/uploads/2025/04/MD-Photo.jpg"
+      ],
+      "organizer": {
+        "@type": "Organization",
+        "name": "Dnyanjyoti Education",
+        "url": "https://www.dnyanjyoti.com"
+      },
+      "performer": {
+        "@type": "Person",
+        "name": "Dr. Vishal Bhedurkar"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+    </script>
 
     <style>
         body { font-family: sans-serif; }
@@ -65,7 +114,8 @@
         import { 
             CheckCircle, Play, Pause, MessageCircle, Send, ChevronRight, 
             BookOpen, Clock, Award, Download, ShieldCheck, Settings, 
-            Lock, Unlock, Video, X, Star, Zap, Target, Book, Brain, Scale, FileText
+            Lock, Unlock, Video, X, Star, Zap, Target, Book, Brain, Scale, FileText,
+            Eye, EyeOff, RotateCcw
         } from 'lucide-react';
 
         // Safe Database Import
@@ -89,8 +139,8 @@
         const DEFAULT_SETTINGS = {
             theme: { primary: '#002244', accent: '#EA580C', background: '#F8FAFC' },
             videoConfig: { type: 'none', src: '', title: 'Message from Dr. Vishal' },
-            socialLinks: { whatsapp: '#', telegram: '#' },
-            adminPasskey: 'admin123' // Default passkey
+            socialLinks: { whatsapp: '#', telegram: '#' }
+            // adminPasskey is fetched separately for security
         };
 
         const CustomVideoPlayer = ({ videoSource }) => {
@@ -146,21 +196,82 @@
         const App = ({ isOffline }) => {
             const [currentPage, setCurrentPage] = useState('landing');
             const [isAdmin, setIsAdmin] = useState(false);
+            
+            // Login Modal States
+            const [showLoginModal, setShowLoginModal] = useState(false);
+            const [loginPasskey, setLoginPasskey] = useState('');
+            const [isSettingNewPasskey, setIsSettingNewPasskey] = useState(false);
+            const [showPassword, setShowPassword] = useState(false);
+            
             const [adminPanelOpen, setAdminPanelOpen] = useState(false);
             const [isSubmitting, setIsSubmitting] = useState(false);
             const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+            const [dbPasskey, setDbPasskey] = useState(null); // Stores the real passkey from DB
 
             useEffect(() => {
                 if (isOffline || !db) return;
                 try {
                     const unsubscribe = firestoreFuncs.onSnapshot(firestoreFuncs.doc(db, "settings", "global"), (docSnap) => {
                         if (docSnap.exists()) {
-                            setSettings(docSnap.data());
+                            const data = docSnap.data();
+                            // Separate secure passkey from general settings
+                            setDbPasskey(data.adminPasskey || null);
+                            
+                            // Merge other settings with defaults
+                            setSettings(prev => ({
+                                ...prev,
+                                theme: data.theme || prev.theme,
+                                videoConfig: data.videoConfig || prev.videoConfig,
+                                socialLinks: data.socialLinks || prev.socialLinks
+                            }));
+                        } else {
+                            // Document doesn't exist yet, we are in "First Run" mode
+                            setDbPasskey(null);
                         }
                     });
                     return () => unsubscribe();
                 } catch (e) { console.warn("Live sync failed", e); }
             }, [isOffline]);
+
+            const handleAdminLoginClick = () => {
+                if (isAdmin) {
+                    // Toggle panel if already logged in
+                    setAdminPanelOpen(!adminPanelOpen);
+                } else {
+                    // Show login modal
+                    setShowLoginModal(true);
+                    setLoginPasskey('');
+                    // Check if we need to set a new passkey
+                    setIsSettingNewPasskey(!dbPasskey); 
+                }
+            };
+
+            const submitLogin = async () => {
+                if (!loginPasskey.trim()) return alert("Please enter a passkey.");
+
+                if (isSettingNewPasskey) {
+                    // First time setup: Save the new passkey to DB
+                    if (isOffline) return alert("Cannot set passkey offline.");
+                    try {
+                        await firestoreFuncs.setDoc(firestoreFuncs.doc(db, "settings", "global"), { adminPasskey: loginPasskey.trim() }, { merge: true });
+                        alert("Passkey set successfully! You are now logged in.");
+                        setIsAdmin(true);
+                        setAdminPanelOpen(true);
+                        setShowLoginModal(false);
+                    } catch (e) {
+                        alert("Error saving passkey: " + e.message);
+                    }
+                } else {
+                    // Login attempt
+                    if (loginPasskey === dbPasskey) {
+                        setIsAdmin(true);
+                        setAdminPanelOpen(true);
+                        setShowLoginModal(false);
+                    } else {
+                        alert("Incorrect Passkey!");
+                    }
+                }
+            };
 
             const saveSettings = async (newSettings) => {
                 if (isOffline) return alert("Offline Mode: Changes won't save.");
@@ -169,6 +280,24 @@
                     await firestoreFuncs.setDoc(firestoreFuncs.doc(db, "settings", "global"), newSettings, { merge: true });
                 } catch (err) { alert("Error: " + err.message); }
             };
+
+            const resetSettings = async () => {
+                if(!confirm("Are you sure you want to reset all settings to default?")) return;
+                if (isOffline) return alert("Offline Mode: Cannot reset.");
+                
+                try {
+                    // Reset local state to defaults (preserving passkey)
+                    const resetData = {
+                        ...DEFAULT_SETTINGS,
+                        adminPasskey: dbPasskey // Keep the existing passkey
+                    };
+                    setSettings(DEFAULT_SETTINGS);
+                    
+                    // Save to DB
+                    await firestoreFuncs.setDoc(firestoreFuncs.doc(db, "settings", "global"), resetData, { merge: true });
+                    alert("Settings have been reset to defaults.");
+                } catch (err) { alert("Error resetting: " + err.message); }
+            }
 
             const handleRegister = async (e) => {
                 e.preventDefault();
@@ -211,24 +340,68 @@
                     {/* Admin Toggle */}
                     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
                         <button 
-                            onClick={() => {
-                                if (!isAdmin) setIsAdmin(true); 
-                                else setAdminPanelOpen(!adminPanelOpen);
-                            }}
+                            onClick={handleAdminLoginClick}
                             className={`p-3 rounded-full shadow-xl border transition-all ${isAdmin ? 'bg-slate-900 text-white' : 'bg-white text-slate-400 hover:text-[var(--accent)]'}`}
                         >
                             {isAdmin ? <Settings size={24} /> : <Lock size={20} />}
                         </button>
 
-                        {/* Admin Panel */}
+                        {/* Login/Set Passkey Modal */}
+                        {showLoginModal && (
+                            <div className="absolute bottom-16 right-0 bg-white p-4 rounded-2xl shadow-2xl border border-slate-200 w-72 mb-2 animate-fade-in z-50">
+                                <div className="flex justify-between items-center mb-3">
+                                    <h3 className="font-bold text-sm text-slate-800">
+                                        {isSettingNewPasskey ? "Set New Passkey" : "Admin Login"}
+                                    </h3>
+                                    <button onClick={() => setShowLoginModal(false)} className="text-slate-400 hover:text-red-500"><X size={16}/></button>
+                                </div>
+                                <p className="text-xs text-slate-500 mb-3">
+                                    {isSettingNewPasskey ? "First time setup: Create a secure passkey to protect admin settings." : "Enter your passkey to unlock."}
+                                </p>
+                                <div className="relative mb-3">
+                                    <input 
+                                        type={showPassword ? "text" : "password"} 
+                                        value={loginPasskey}
+                                        onChange={(e) => setLoginPasskey(e.target.value)}
+                                        className="w-full text-sm p-2 border rounded focus:border-[var(--accent)] outline-none pr-8"
+                                        placeholder="Passkey"
+                                    />
+                                    <button 
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-2 top-2.5 text-slate-400 hover:text-slate-600"
+                                    >
+                                        {showPassword ? <EyeOff size={14}/> : <Eye size={14}/>}
+                                    </button>
+                                </div>
+                                <button 
+                                    onClick={submitLogin}
+                                    className="w-full bg-[var(--primary)] text-white py-2 rounded text-sm font-bold hover:brightness-110"
+                                >
+                                    {isSettingNewPasskey ? "Save & Login" : "Unlock"}
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Admin Panel (Only shown if isAdmin is true) */}
                         {isAdmin && adminPanelOpen && (
                             <div className="absolute bottom-16 right-0 bg-white p-0 rounded-2xl shadow-2xl border border-slate-200 w-80 overflow-hidden mb-2 animate-fade-in">
                                 <div className="bg-slate-900 p-4 flex justify-between items-center text-white">
                                     <h3 className="font-bold flex items-center gap-2 text-sm"><ShieldCheck size={16} /> Admin Panel</h3>
-                                    <button onClick={() => setIsAdmin(false)} className="text-xs text-slate-400 hover:text-white flex items-center gap-1"><Unlock size={12} /> Logout</button>
+                                    <button onClick={() => { setIsAdmin(false); setAdminPanelOpen(false); }} className="text-xs text-slate-400 hover:text-white flex items-center gap-1"><Unlock size={12} /> Logout</button>
                                 </div>
                                 <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
                                     {isOffline && <p className="text-red-500 text-xs font-bold">OFFLINE MODE: Cannot Save</p>}
+                                    
+                                    <div className="flex justify-between items-center pb-2 border-b border-slate-100">
+                                        <span className="text-xs font-bold text-slate-400 uppercase">Actions</span>
+                                        <button 
+                                            onClick={resetSettings}
+                                            className="flex items-center gap-1 text-[10px] bg-red-50 text-red-600 px-2 py-1 rounded hover:bg-red-100 transition-colors"
+                                        >
+                                            <RotateCcw size={10} /> Reset Defaults
+                                        </button>
+                                    </div>
+
                                     <div>
                                         <label className="text-xs font-bold text-slate-400 uppercase">Primary Color</label>
                                         <div className="flex items-center gap-2 mt-1">
@@ -243,10 +416,7 @@
                                             <span className="text-xs bg-slate-100 px-2 py-1 rounded">{settings.theme.accent}</span>
                                         </div>
                                     </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-400 uppercase">Admin Passkey</label>
-                                        <input type="text" value={settings.adminPasskey || ''} onChange={(e) => saveSettings({ ...settings, adminPasskey: e.target.value })} className="w-full text-xs p-2 border rounded mt-1 outline-none focus:border-blue-500" placeholder="Set Admin Password" />
-                                    </div>
+                                    {/* Admin Passkey field removed from here as requested for security */}
                                     <div>
                                         <label className="text-xs font-bold text-slate-400 uppercase">WhatsApp Link</label>
                                         <input type="text" value={settings.socialLinks.whatsapp} onChange={(e) => saveSettings({ ...settings, socialLinks: { ...settings.socialLinks, whatsapp: e.target.value } })} className="w-full text-xs p-2 border rounded mt-1 outline-none focus:border-blue-500" placeholder="https://..." />
@@ -276,7 +446,7 @@
                                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--accent)] to-orange-400">New Descriptive Pattern</span>
                                     </h1>
                                     <p className="text-lg md:text-2xl text-slate-300 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-                                        Master the exact <span className="text-white font-semibold border-b border-[var(--accent)]">Framework Method</span> used by 350+ Officers.
+                                        Master the exact <span className="text-white font-semibold border-b border-[var(--accent)]">Framework Method</span> used by 350+ Officers to crack MPSC/UPSC.
                                     </p>
                                     <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
                                         <button onClick={() => document.getElementById('reg-form')?.scrollIntoView({ behavior: 'smooth' })} className="w-full sm:w-auto px-10 py-5 bg-[var(--accent)] hover:brightness-110 text-white font-bold rounded-xl text-lg shadow-xl shadow-orange-900/20 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
@@ -290,14 +460,14 @@
                             <section className="py-24 px-6 bg-white relative z-20 -mt-10 rounded-t-[40px]">
                                 <div className="max-w-6xl mx-auto">
                                     <div className="text-center mb-16">
-                                        <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-4">Why This Webinar is Mandatory</h2>
+                                        <h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-4">Why This MPSC/UPSC Webinar is Mandatory</h2>
                                         <div className="w-24 h-1.5 bg-[var(--accent)] mx-auto rounded-full"></div>
                                     </div>
                                     <div className="grid md:grid-cols-3 gap-8">
                                         {[
-                                            { icon: <BookOpen className="text-[var(--accent)]" size={32} />, title: "Decoding the Pattern", desc: "Understand exactly what the Commission expects." },
-                                            { icon: <Clock className="text-[var(--accent)]" size={32} />, title: "Time-Blocking", desc: "Scientific routine management." },
-                                            { icon: <Award className="text-[var(--accent)]" size={32} />, title: "The Framework Method", desc: "Draft high-scoring answers in 8 minutes." }
+                                            { icon: <BookOpen className="text-[var(--accent)]" size={32} />, title: "Decoding the Syllabus", desc: "Understand exactly what the MPSC/UPSC Commission expects in 2025." },
+                                            { icon: <Clock className="text-[var(--accent)]" size={32} />, title: "Time-Blocking Strategy", desc: "Scientific routine management for working professionals and students." },
+                                            { icon: <Award className="text-[var(--accent)]" size={32} />, title: "The Framework Method", desc: "Draft high-scoring descriptive answers in under 8 minutes." }
                                         ].map((item, i) => (
                                             <div key={i} className="p-8 rounded-2xl bg-slate-50 hover:shadow-xl transition-all border border-slate-100 hover:border-[var(--accent)]">
                                                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm">{item.icon}</div>
@@ -313,20 +483,20 @@
                             <section className="py-24 px-6 bg-[var(--primary)] text-white">
                                 <div className="max-w-6xl mx-auto">
                                     <div className="text-center mb-16">
-                                        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Webinar Agenda</h2>
+                                        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Webinar Agenda & Syllabus Breakdown</h2>
                                         <p className="text-slate-300 text-lg">What will you learn in this FREE UPSC/MPSC Webinar?</p>
                                         <div className="w-24 h-1.5 bg-[var(--accent)] mx-auto rounded-full mt-4"></div>
                                     </div>
                                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                                         {[
-                                            { id: 1, text: "What is UPSC/MPSC? A detailed analysis." },
+                                            { id: 1, text: "What is UPSC/MPSC? A detailed analysis for beginners." },
                                             { id: 2, text: "Posts under UPSC/MPSC – Eligibility and qualifications required." },
                                             { id: 3, text: "Can UPSC CSE & MPSC Rajyaseva be prepared together?" },
                                             { id: 4, text: "How many months of study are required to crack UPSC/MPSC?" },
-                                            { id: 5, text: "Complete analysis of UPSC/MPSC syllabus." },
+                                            { id: 5, text: "Complete analysis of UPSC/MPSC syllabus 2025." },
                                             { id: 6, text: "Common obstacles faced at the beginning of preparation & their solutions." },
                                             { id: 7, text: "Should you prepare in Marathi or English medium?" },
-                                            { id: 8, text: "Which books to start with for MPSC Combine & which subjects need more focus." }
+                                            { id: 8, text: "Which books to start with for MPSC Combine & subject focus areas." }
                                         ].map((item) => (
                                             <div key={item.id} className="bg-white/10 backdrop-blur-md border border-white/10 p-6 rounded-2xl hover:bg-white/20 transition-all group">
                                                 <div className="w-10 h-10 rounded-full bg-[var(--accent)] text-[var(--primary)] font-bold flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
@@ -343,7 +513,7 @@
                             <section className="py-24 px-6 bg-slate-900 text-white border-t border-slate-800">
                                 <div className="max-w-6xl mx-auto">
                                     <div className="text-center mb-16">
-                                        <h2 className="text-3xl md:text-4xl font-bold mb-4">The 5 Secrets of Success</h2>
+                                        <h2 className="text-3xl md:text-4xl font-bold mb-4">The 5 Secrets of Success for Competitive Exams</h2>
                                         <div className="w-24 h-1.5 bg-[var(--accent)] mx-auto rounded-full"></div>
                                     </div>
                                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -384,8 +554,8 @@
                                             <div className="md:w-5/12 bg-slate-900 relative min-h-[450px] group overflow-hidden">
                                                 <img 
                                                     src="https://www.dnyanjyoti.com/wp-content/uploads/2025/04/MD-Photo.jpg" 
-                                                    alt="Dr. Vishal Bhedurkar" 
-                                                    className="absolute inset-0 w-full h-full object-cover object-top opacity-90 transition-transform duration-700 group-hover:scale-105 scale-x-[-1]"
+                                                    alt="Dr. Vishal Bhedurkar - Top MPSC/UPSC Mentor in Pune" 
+                                                    className="absolute inset-0 w-full h-full object-cover object-top opacity-90 transition-transform duration-700"
                                                     onError={(e) => {
                                                         e.target.src = "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
                                                     }}
