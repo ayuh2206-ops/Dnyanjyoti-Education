@@ -7,7 +7,7 @@ export type SiteSettings = {
   updatedAt?: any;
 };
 
-// Client-side helper that calls the server API route
+// Client-side helper that calls server API to save to Firestore
 export async function saveSettings(settings: SiteSettings) {
   try {
     const res = await fetch('/api/saveSettings', {
