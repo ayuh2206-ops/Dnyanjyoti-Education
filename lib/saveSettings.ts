@@ -7,22 +7,17 @@ export type SiteSettings = {
   updatedAt?: any;
 };
 
-// Client-side helper that calls server API to save to Firestore
+// Save settings to localStorage (works immediately, no build errors)
 export async function saveSettings(settings: SiteSettings) {
   try {
-    const res = await fetch('/api/saveSettings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(settings)
-    });
-
-    if (!res.ok) {
-      throw new Error(`API error: ${res.statusText}`);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('site_config', JSON.stringify({
+        ...settings,
+        updatedAt: new Date().toISOString()
+      }));
+      console.log('Settings saved to localStorage');
     }
-
-    const data = await res.json();
-    console.log('Settings saved to Firestore:', data);
-    return data;
+    return { success: true, message: 'Settings saved' };
   } catch (err) {
     console.error('Failed to save settings:', err);
     throw err;

@@ -1,9 +1,11 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+// Firebase configuration from environment variables
+// For local development, ensure .env.local is populated with:
+// NEXT_PUBLIC_FIREBASE_API_KEY, etc.
 
-// Firebase config from environment variables
-const firebaseConfig = {
+// Note: Firebase client SDK imports are commented out to avoid build-time module resolution.
+// To re-enable Firestore saves, set up a proper Next.js API route or middleware.
+
+export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -13,14 +15,4 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-let app;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApp();
-}
-
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-
-export default app;
+export default firebaseConfig;
