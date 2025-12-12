@@ -1,6 +1,5 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
 import saveSettings from '../lib/saveSettings';
 import { 
   CheckCircle, 
