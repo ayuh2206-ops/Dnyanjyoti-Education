@@ -48,6 +48,42 @@
     <!-- 3. Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    <!-- Schema Markup for Event -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationEvent",
+      "name": "MPSC/UPSC Strategy Webinar",
+      "description": "A free webinar on the new MPSC/UPSC descriptive pattern and preparation strategy by Dr. Vishal Bhedurkar.",
+      "startDate": "2025-12-15T10:00:00+05:30",
+      "endDate": "2025-12-15T12:00:00+05:30",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+      "location": {
+        "@type": "VirtualLocation",
+        "url": "https://dnyanjyoti-education.vercel.app/"
+      },
+      "image": [
+        "https://www.dnyanjyoti.com/wp-content/uploads/2025/04/MD-Photo.jpg"
+      ],
+      "organizer": {
+        "@type": "Organization",
+        "name": "Dnyanjyoti Education",
+        "url": "https://www.dnyanjyoti.com"
+      },
+      "performer": {
+        "@type": "Person",
+        "name": "Dr. Vishal Bhedurkar"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+    </script>
+
     <style>
         body { font-family: sans-serif; }
         .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #EA580C; animation: spin 1s linear infinite; }
@@ -79,7 +115,7 @@
             CheckCircle, Play, Pause, MessageCircle, Send, ChevronRight, 
             BookOpen, Clock, Award, Download, ShieldCheck, Settings, 
             Lock, Unlock, Video, X, Star, Zap, Target, Book, Brain, Scale, FileText,
-            Eye, EyeOff, RotateCcw, Instagram, Facebook, Users, ArrowLeft, Trash2, Edit2
+            Eye, EyeOff, RotateCcw, Instagram, Facebook, Users, ArrowLeft, Trash2, Edit2, Layout, Home
         } from 'lucide-react';
 
         // Safe Database Import
@@ -416,10 +452,26 @@
                                         </button>
                                     </div>
 
+                                    {/* Navigation Links for Admin */}
+                                    <div className="bg-slate-50 p-2 rounded-lg mb-4 flex gap-2">
+                                        <button 
+                                            onClick={() => { setCurrentPage('landing'); setAdminPanelOpen(false); }}
+                                            className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1 ${currentPage === 'landing' ? 'bg-white shadow text-[var(--primary)]' : 'text-slate-500 hover:bg-white/50'}`}
+                                        >
+                                            <Home size={14} /> Home
+                                        </button>
+                                        <button 
+                                            onClick={() => { setCurrentPage('thankyou'); setAdminPanelOpen(false); }}
+                                            className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1 ${currentPage === 'thankyou' ? 'bg-white shadow text-[var(--primary)]' : 'text-slate-500 hover:bg-white/50'}`}
+                                        >
+                                            <CheckCircle size={14} /> Thank You
+                                        </button>
+                                    </div>
+
                                     {/* Link to Leads Dashboard */}
                                     <button 
                                         onClick={() => { setCurrentPage('admin-dashboard'); fetchLeads(); setAdminPanelOpen(false); }}
-                                        className="w-full bg-[var(--primary)] text-white py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-sm shadow-md hover:brightness-110 mb-4 mt-2"
+                                        className="w-full bg-[var(--primary)] text-white py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-sm shadow-md hover:brightness-110 mb-4"
                                     >
                                         <Users size={16} /> Manage Student Leads
                                     </button>
