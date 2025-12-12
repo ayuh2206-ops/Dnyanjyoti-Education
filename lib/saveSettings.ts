@@ -1,3 +1,5 @@
+'use client';
+
 export type SiteSettings = {
   theme: { primary: string; accent: string; background: string };
   videoConfig: { type: string; src: string; title?: string };
@@ -5,28 +7,22 @@ export type SiteSettings = {
   updatedAt?: any;
 };
 
-// Use dynamic import at runtime to avoid bundler resolving firebase on server/build.
+// Client-side helper that calls the server API route
 export async function saveSettings(settings: SiteSettings) {
   try {
-    const [{ doc, setDoc, Timestamp }, { initializeApp, getApps, getApp }, { getFirestore }, { firebaseConfig }] = await Promise.all([
-      import('firebase/firestore'),
-      import('firebase/app'),
-      import('firebase/firestore'),
-      import('./firebaseConfig')
-    ] as any);
+    const res = await fetch('/api/saveSettings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settings)
+    });
 
-    // initialize app if needed
-    let app;
-    if (!getApps().length) {
-      app = initializeApp(firebaseConfig);
-    } else {
-      app = getApp();
+    if (!res.ok) {
+      throw new Error(`API error: ${res.statusText}`);
     }
 
-    const db = getFirestore(app);
-    const ref = doc(db, 'site', 'config');
-    await setDoc(ref, { ...settings, updatedAt: Timestamp.now() }, { merge: true });
-    console.log('Settings saved to Firestore');
+    const data = await res.json();
+    console.log('Settings saved to Firestore:', data);
+    return data;
   } catch (err) {
     console.error('Failed to save settings:', err);
     throw err;
