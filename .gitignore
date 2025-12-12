@@ -6,3 +6,6 @@ build/
 .DS_Store
 .env.local
 .env.*.local
+
+# Firebase local config (do not commit your real keys)
+lib/firebaseConfig.ts

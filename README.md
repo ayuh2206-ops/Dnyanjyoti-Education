@@ -66,6 +66,21 @@ landing-page-nextjs/
 ├── next.config.js          # Next.js config
 ├── tailwind.config.js      # Tailwind CSS config
 └── postcss.config.js       # PostCSS config
+## Firebase setup
+
+1. Copy `lib/firebaseConfig.example.ts` to `lib/firebaseConfig.ts` and paste your Firebase web config (API key, projectId, etc.).
+2. `lib/firebaseConfig.ts` is ignored by git by default — do not commit your real credentials.
+3. The helper `lib/firebase.ts` exports `db` (Firestore) and `auth` (Firebase Auth) for use in the app.
+
+Example usage:
+
+```ts
+import { db } from './lib/firebase';
+import { collection, addDoc } from 'firebase/firestore';
+
+await addDoc(collection(db, 'registrations'), { name: 'Alice' });
+```
+
 ```
 
 ## Technologies Used
