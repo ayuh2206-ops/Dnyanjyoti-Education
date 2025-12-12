@@ -6,3 +6,27 @@
   background-color: var(--accent);
   color: white;
 }
+
+/* Flickering glow animation for headline pill text */
+.glow-flicker {
+  color: #ff2b2b;
+  font-weight: 700;
+  text-shadow: 0 0 6px rgba(255,43,43,0.9), 0 0 18px rgba(255,43,43,0.6);
+  -webkit-text-stroke: 0.0px transparent;
+  animation: flicker 1.8s linear infinite;
+}
+
+@keyframes flicker {
+  0%, 18%, 22%, 25%, 53%, 100% {
+    text-shadow: 0 0 6px rgba(255,43,43,0.95), 0 0 20px rgba(255,43,43,0.6);
+    opacity: 1;
+  }
+  20%, 24%, 55% {
+    text-shadow: none;
+    opacity: 0.85;
+  }
+  23% {
+    text-shadow: 0 0 2px rgba(255,43,43,0.5);
+    opacity: 0.95;
+  }
+}

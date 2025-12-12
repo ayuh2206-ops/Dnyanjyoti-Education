@@ -182,6 +182,13 @@ const LandingPage = ({ onRegister, theme }) => {
               </span>
               Live Exclusive Webinar
             </div>
+
+            {/* Large orange pill with flickering red text */}
+            <div className="flex justify-center mb-8">
+              <div className="w-[320px] md:w-[560px] h-8 md:h-10 bg-[var(--accent)] rounded-full flex items-center justify-center">
+                <span className="glow-flicker">Exclusive Free Webinar</span>
+              </div>
+            </div>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-8 leading-[1.1]">
               Conquer the Fear of the <br className="hidden md:block" />
