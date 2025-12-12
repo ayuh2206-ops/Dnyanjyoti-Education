@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- 1. Performance: Preconnect (Critical for Speed) -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://esm.sh">
+    <link rel="preconnect" href="https://www.gstatic.com">
+    <link rel="preconnect" href="https://www.dnyanjyoti.com">
+    
+    <!-- 2. Performance: Preload Hero Image (LCP Optimization) -->
+    <link rel="preload" as="image" href="https://www.dnyanjyoti.com/wp-content/uploads/2025/04/MD-Photo.jpg" fetchpriority="high">
+
     <!-- SEO Meta Tags -->
     <title>MPSC/UPSC Coaching Pune | Free Webinar by Dnyanjyoti Education</title>
     <meta name="description" content="Join the best MPSC & UPSC coaching in Pune. Attend Dr. Vishal Bhedurkar's FREE webinar on the new descriptive pattern, syllabus, and strategy. 1 Lakh+ students guided. Register now!">
@@ -11,32 +20,23 @@
     <meta name="author" content="Dnyanjyoti Education">
     <meta name="robots" content="index, follow">
 
-    <!-- Open Graph for Social Sharing -->
+    <!-- Open Graph -->
     <meta property="og:title" content="Unlock MPSC/UPSC Success | Free Webinar">
     <meta property="og:description" content="Master the new descriptive pattern with Dr. Vishal Bhedurkar. Register for the free webinar today!">
     <meta property="og:image" content="https://www.dnyanjyoti.com/wp-content/uploads/2025/04/MD-Photo.jpg">
     <meta property="og:url" content="https://dnyanjyoti-education.vercel.app/">
     <meta property="og:type" content="website">
 
-    <!-- PERFORMANCE: Preconnect to CDNs -->
-    <link rel="preconnect" href="https://cdn.tailwindcss.com">
-    <link rel="preconnect" href="https://esm.sh">
-    <link rel="preconnect" href="https://www.gstatic.com">
-    <link rel="preconnect" href="https://www.dnyanjyoti.com">
-    
-    <!-- PERFORMANCE: Preload LCP Image (The Hero Image) -->
-    <!-- This forces the browser to download the main image immediately -->
-    <link rel="preload" as="image" href="https://www.dnyanjyoti.com/wp-content/uploads/2025/04/MD-Photo.jpg" fetchpriority="high">
-
-    <!-- Critical CSS -->
+    <!-- Critical CSS (Inline for instant FCP) -->
     <style>
-        body { background-color: #F8FAFC; color: #0f172a; font-family: sans-serif; font-display: swap; }
-        .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #EA580C; animation: spin 1s linear infinite; }
+        body { background-color: #F8FAFC; color: #0f172a; font-family: sans-serif; font-display: swap; margin: 0; }
+        .loading-container { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
+        .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 40px; height: 40px; border-radius: 50%; border-left-color: #EA580C; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         html { scroll-behavior: smooth; }
     </style>
 
-    <!-- 1. Tailwind CSS -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -50,7 +50,7 @@
         }
     </script>
 
-    <!-- 2. Import Map -->
+    <!-- Import Map -->
     <script type="importmap">
     {
         "imports": {
@@ -63,7 +63,7 @@
     }
     </script>
 
-    <!-- 3. Babel -->
+    <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <!-- Schema Markup -->
@@ -90,18 +90,18 @@
     <div id="error-container" style="display:none; padding: 20px; background: #fee2e2; color: #b91c1c; margin: 20px; border-radius: 8px; border: 1px solid #f87171;">
         <h3 style="font-weight: bold; margin-bottom: 8px;">Application Failed to Load</h3>
         <p id="error-message">Unknown Error</p>
-        <p style="font-size: 0.8em; margin-top: 8px;">Tip: Ensure <code>firebase-config.js</code> is in the same folder and you are running this on a local server (http://localhost), not by double-clicking the file.</p>
+        <p style="font-size: 0.8em; margin-top: 8px;">Tip: Ensure <code>firebase-config.js</code> is in the same folder.</p>
     </div>
 
-    <!-- App Root -->
+    <!-- App Root with Instant Loading State -->
     <div id="root">
-        <div class="h-screen flex items-center justify-center flex-col gap-4">
+        <div class="loading-container">
             <div class="spinner"></div>
-            <p class="text-slate-500 text-sm">Loading Application...</p>
+            <p style="color: #64748b; font-size: 0.875rem;">Loading Dnyanjyoti Education...</p>
         </div>
     </div>
 
-    <!-- 4. Main Script -->
+    <!-- Main Script -->
     <script type="text/babel" data-type="module">
         import React, { useState, useEffect, useRef } from 'react';
         import { createRoot } from 'react-dom/client';
@@ -122,11 +122,10 @@
                 db = firebaseConfig.db;
                 const fs = await import('firebase/firestore');
                 firestoreFuncs = { ...fs };
-                if (!db) throw new Error("Database object is undefined from config file.");
+                if (!db) throw new Error("Database object is undefined.");
                 renderReactApp(false);
             } catch (err) {
                 console.error("Firebase Load Error:", err);
-                console.warn("Running in Offline/Demo Mode.");
                 renderReactApp(true);
             }
         }
@@ -142,46 +141,20 @@
             const videoRef = useRef(null);
             const [isPlaying, setIsPlaying] = useState(false);
             const [showControls, setShowControls] = useState(true);
-
             const togglePlay = () => {
-                if (videoRef.current) {
-                    isPlaying ? videoRef.current.pause() : videoRef.current.play();
-                    setIsPlaying(!isPlaying);
-                }
+                if (videoRef.current) { isPlaying ? videoRef.current.pause() : videoRef.current.play(); setIsPlaying(!isPlaying); }
             };
-
             return (
-                <div 
-                    className="relative w-full h-full group bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-slate-200"
-                    onMouseEnter={() => setShowControls(true)}
-                    onMouseLeave={() => isPlaying && setShowControls(false)}
-                >
+                <div className="relative w-full h-full group bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-slate-200" onMouseEnter={() => setShowControls(true)} onMouseLeave={() => isPlaying && setShowControls(false)}>
                     {!videoSource.src ? (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-slate-500 h-64 md:h-full">
-                           <Video size={48} className="mb-4 opacity-50" />
-                           <p>No Video Configured</p>
-                        </div>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-slate-500 h-64 md:h-full"><Video size={48} className="mb-4 opacity-50" /><p>No Video Configured</p></div>
                     ) : (
-                        <video 
-                            ref={videoRef}
-                            src={videoSource.src}
-                            className="w-full h-full object-cover"
-                            onClick={togglePlay}
-                            onEnded={() => setIsPlaying(false)}
-                            playsInline
-                        />
+                        <video ref={videoRef} src={videoSource.src} className="w-full h-full object-cover" onClick={togglePlay} onEnded={() => setIsPlaying(false)} playsInline />
                     )}
-                    
                     {showControls && videoSource.src && (
                         <div className="absolute inset-0 bg-black/40 flex flex-col justify-between p-6 transition-opacity duration-300">
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <button onClick={togglePlay} className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center pointer-events-auto hover:scale-110 transition-transform" aria-label="Play Video">
-                                    {isPlaying ? <Pause className="fill-white text-white" /> : <Play className="fill-white text-white ml-1" />}
-                                </button>
-                            </div>
-                            <div className="mt-auto pointer-events-none">
-                               <p className="text-white font-bold text-lg drop-shadow-md">{videoSource.title}</p>
-                            </div>
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><button onClick={togglePlay} className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center pointer-events-auto hover:scale-110 transition-transform"><{isPlaying ? Pause : Play} className="fill-white text-white ml-1" /></button></div>
+                            <div className="mt-auto pointer-events-none"><p className="text-white font-bold text-lg drop-shadow-md">{videoSource.title}</p></div>
                         </div>
                     )}
                 </div>
@@ -204,16 +177,14 @@
 
             useEffect(() => {
                 if (isOffline || !db) return;
-                try {
-                    const unsubscribe = firestoreFuncs.onSnapshot(firestoreFuncs.doc(db, "settings", "global"), (docSnap) => {
-                        if (docSnap.exists()) {
-                            const data = docSnap.data();
-                            setDbPasskey(data.adminPasskey || null);
-                            setSettings(prev => ({ ...prev, ...data, socialLinks: { ...prev.socialLinks, ...data.socialLinks } }));
-                        } else { setDbPasskey(null); }
-                    });
-                    return () => unsubscribe();
-                } catch (e) { console.warn("Sync failed", e); }
+                const unsubscribe = firestoreFuncs.onSnapshot(firestoreFuncs.doc(db, "settings", "global"), (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        setDbPasskey(data.adminPasskey || null);
+                        setSettings(prev => ({ ...prev, ...data, socialLinks: { ...prev.socialLinks, ...data.socialLinks } }));
+                    } else { setDbPasskey(null); }
+                });
+                return () => unsubscribe();
             }, [isOffline]);
 
             const fetchLeads = async () => {
@@ -224,20 +195,11 @@
                     const querySnapshot = await firestoreFuncs.getDocs(q);
                     setLeads(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
                 } catch (e) { 
-                    try {
-                        // Fallback if index not ready
-                        const q = firestoreFuncs.collection(db, "leads");
-                        const querySnapshot = await firestoreFuncs.getDocs(q);
-                        setLeads(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-                    } catch(err) { console.error(err); }
+                    try { const q = firestoreFuncs.collection(db, "leads"); const querySnapshot = await firestoreFuncs.getDocs(q); setLeads(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))); } catch(err) { console.error(err); }
                 } finally { setIsLoadingLeads(false); }
             };
 
-            const handleDeleteLead = async (id) => {
-                if (!confirm("Delete this registration?")) return;
-                try { await firestoreFuncs.deleteDoc(firestoreFuncs.doc(db, "leads", id)); setLeads(leads.filter(l => l.id !== id)); } catch(e) { alert(e.message); }
-            };
-
+            const handleDeleteLead = async (id) => { if (!confirm("Delete?")) return; try { await firestoreFuncs.deleteDoc(firestoreFuncs.doc(db, "leads", id)); setLeads(leads.filter(l => l.id !== id)); } catch(e) { alert(e.message); } };
             const handleEditLead = async (lead) => {
                 const newName = prompt("Edit Name:", lead.name); if(newName===null) return;
                 const newEmail = prompt("Edit Email:", lead.email); if(newEmail===null) return;
@@ -251,76 +213,41 @@
                 if (!loginPasskey.trim()) return alert("Enter passkey.");
                 if (isSettingNewPasskey) {
                     if (isOffline) return alert("Offline.");
-                    try { await firestoreFuncs.setDoc(firestoreFuncs.doc(db, "settings", "global"), { adminPasskey: loginPasskey.trim() }, { merge: true });
-                        setIsAdmin(true); setAdminPanelOpen(true); setShowLoginModal(false);
-                    } catch (e) { alert(e.message); }
+                    try { await firestoreFuncs.setDoc(firestoreFuncs.doc(db, "settings", "global"), { adminPasskey: loginPasskey.trim() }, { merge: true }); setIsAdmin(true); setAdminPanelOpen(true); setShowLoginModal(false); } catch (e) { alert(e.message); }
                 } else {
                     if (loginPasskey === dbPasskey) { setIsAdmin(true); setAdminPanelOpen(true); setShowLoginModal(false); } else { alert("Incorrect Passkey"); }
                 }
             };
 
-            const saveSettings = async (newSettings) => {
-                if (isOffline) return alert("Offline.");
-                try { setSettings(newSettings); await firestoreFuncs.setDoc(firestoreFuncs.doc(db, "settings", "global"), newSettings, { merge: true }); } catch (err) { alert(err.message); }
-            };
-
-            const resetSettings = async () => {
-                if(!confirm("Reset all settings?")) return;
-                try { const resetData = { ...DEFAULT_SETTINGS, adminPasskey: dbPasskey }; setSettings(DEFAULT_SETTINGS); await firestoreFuncs.setDoc(firestoreFuncs.doc(db, "settings", "global"), resetData, { merge: true }); } catch (err) { alert(err.message); }
-            }
+            const saveSettings = async (newSettings) => { if (isOffline) return alert("Offline."); try { setSettings(newSettings); await firestoreFuncs.setDoc(firestoreFuncs.doc(db, "settings", "global"), newSettings, { merge: true }); } catch (err) { alert(err.message); } };
+            const resetSettings = async () => { if(!confirm("Reset defaults?")) return; try { const resetData = { ...DEFAULT_SETTINGS, adminPasskey: dbPasskey }; setSettings(DEFAULT_SETTINGS); await firestoreFuncs.setDoc(firestoreFuncs.doc(db, "settings", "global"), resetData, { merge: true }); } catch (err) { alert(err.message); } }
 
             const handleRegister = async (e) => {
                 e.preventDefault(); setIsSubmitting(true);
                 if (isOffline) { setTimeout(() => { setCurrentPage('thankyou'); window.scrollTo(0,0); setIsSubmitting(false); }, 1000); return; }
                 const formData = new FormData(e.currentTarget);
                 const leadData = { name: formData.get('fullName'), email: formData.get('email'), phone: formData.get('phone'), registeredAt: new Date().toISOString(), source: 'web_v1' };
-                try { await firestoreFuncs.addDoc(firestoreFuncs.collection(db, "leads"), leadData); setTimeout(() => { setCurrentPage('thankyou'); window.scrollTo(0,0); setIsSubmitting(false); }, 500); } catch (error) { alert("Failed. Check console."); setIsSubmitting(false); }
+                try { await firestoreFuncs.addDoc(firestoreFuncs.collection(db, "leads"), leadData); setTimeout(() => { setCurrentPage('thankyou'); window.scrollTo(0,0); setIsSubmitting(false); }, 500); } catch (error) { alert("Failed."); setIsSubmitting(false); }
             };
 
             return (
                 <div style={{ '--primary': settings.theme.primary, '--accent': settings.theme.accent }} className="animate-fade-in font-sans">
-                    
-                    {/* Admin Toggle */}
                     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-                        <button onClick={() => { if(isAdmin) setAdminPanelOpen(!adminPanelOpen); else { setShowLoginModal(true); setLoginPasskey(''); setIsSettingNewPasskey(!dbPasskey); } }} 
-                            className={`p-3 rounded-full shadow-xl border transition-all ${isAdmin ? 'bg-slate-900 text-white' : 'bg-white text-slate-400 hover:text-[var(--accent)]'}`} aria-label="Admin Login">
-                            {isAdmin ? <Settings size={24} /> : <Lock size={20} />}
-                        </button>
-
-                        {/* Login Modal */}
+                        <button onClick={() => { if(isAdmin) setAdminPanelOpen(!adminPanelOpen); else { setShowLoginModal(true); setLoginPasskey(''); setIsSettingNewPasskey(!dbPasskey); } }} className={`p-3 rounded-full shadow-xl border transition-all ${isAdmin ? 'bg-slate-900 text-white' : 'bg-white text-slate-400 hover:text-[var(--accent)]'}`}>{isAdmin ? <Settings size={24} /> : <Lock size={20} />}</button>
                         {showLoginModal && (
                             <div className="absolute bottom-16 right-0 bg-white p-4 rounded-2xl shadow-2xl border border-slate-200 w-72 mb-2 animate-fade-in z-50">
-                                <div className="flex justify-between items-center mb-3">
-                                    <h3 className="font-bold text-sm text-slate-800">{isSettingNewPasskey ? "Set New Passkey" : "Admin Login"}</h3>
-                                    <button onClick={() => setShowLoginModal(false)} className="text-slate-400 hover:text-red-500"><X size={16}/></button>
-                                </div>
-                                <p className="text-xs text-slate-500 mb-3">{isSettingNewPasskey ? "Create a secure passkey." : "Enter passkey to unlock."}</p>
-                                <div className="relative mb-3">
-                                    <input type={showPassword ? "text" : "password"} value={loginPasskey} onChange={(e) => setLoginPasskey(e.target.value)} className="w-full text-sm p-2 border rounded outline-none pr-8" placeholder="Passkey" />
-                                    <button onClick={() => setShowPassword(!showPassword)} className="absolute right-2 top-2.5 text-slate-400"><Eye size={14}/></button>
-                                </div>
+                                <div className="flex justify-between items-center mb-3"><h3 className="font-bold text-sm text-slate-800">{isSettingNewPasskey ? "Set New Passkey" : "Admin Login"}</h3><button onClick={() => setShowLoginModal(false)} className="text-slate-400 hover:text-red-500"><X size={16}/></button></div>
+                                <div className="relative mb-3"><input type={showPassword ? "text" : "password"} value={loginPasskey} onChange={(e) => setLoginPasskey(e.target.value)} className="w-full text-sm p-2 border rounded outline-none pr-8" placeholder="Passkey" /><button onClick={() => setShowPassword(!showPassword)} className="absolute right-2 top-2.5 text-slate-400"><Eye size={14}/></button></div>
                                 <button onClick={submitLogin} className="w-full bg-[var(--primary)] text-white py-2 rounded text-sm font-bold hover:brightness-110">{isSettingNewPasskey ? "Save & Login" : "Unlock"}</button>
                             </div>
                         )}
-
-                        {/* Admin Panel */}
                         {isAdmin && adminPanelOpen && (
                             <div className="absolute bottom-16 right-0 bg-white p-0 rounded-2xl shadow-2xl border border-slate-200 w-80 overflow-hidden mb-2 animate-fade-in">
-                                <div className="bg-slate-900 p-4 flex justify-between items-center text-white">
-                                    <h3 className="font-bold flex items-center gap-2 text-sm"><ShieldCheck size={16} /> Admin Panel</h3>
-                                    <button onClick={() => { setIsAdmin(false); setAdminPanelOpen(false); }} className="text-xs text-slate-400 hover:text-white flex items-center gap-1"><Unlock size={12} /> Logout</button>
-                                </div>
+                                <div className="bg-slate-900 p-4 flex justify-between items-center text-white"><h3 className="font-bold flex items-center gap-2 text-sm"><ShieldCheck size={16} /> Admin Panel</h3><button onClick={() => { setIsAdmin(false); setAdminPanelOpen(false); }} className="text-xs text-slate-400 hover:text-white flex items-center gap-1"><Unlock size={12} /> Logout</button></div>
                                 <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
-                                    <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-                                        <span className="text-xs font-bold text-slate-400 uppercase">Site Settings</span>
-                                        <button onClick={resetSettings} className="flex items-center gap-1 text-[10px] bg-red-50 text-red-600 px-2 py-1 rounded hover:bg-red-100"><RotateCcw size={10} /> Reset</button>
-                                    </div>
-                                    <div className="bg-slate-50 p-2 rounded-lg mb-4 flex gap-2">
-                                        <button onClick={() => { setCurrentPage('landing'); setAdminPanelOpen(false); }} className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1 ${currentPage === 'landing' ? 'bg-white shadow text-[var(--primary)]' : 'text-slate-500 hover:bg-white/50'}`}><Home size={14} /> Home</button>
-                                        <button onClick={() => { setCurrentPage('thankyou'); setAdminPanelOpen(false); }} className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1 ${currentPage === 'thankyou' ? 'bg-white shadow text-[var(--primary)]' : 'text-slate-500 hover:bg-white/50'}`}><CheckCircle size={14} /> Thank You</button>
-                                    </div>
+                                    <div className="flex justify-between items-center pb-2 border-b border-slate-100"><span className="text-xs font-bold text-slate-400 uppercase">Site Settings</span><button onClick={resetSettings} className="flex items-center gap-1 text-[10px] bg-red-50 text-red-600 px-2 py-1 rounded hover:bg-red-100"><RotateCcw size={10} /> Reset</button></div>
+                                    <div className="bg-slate-50 p-2 rounded-lg mb-4 flex gap-2"><button onClick={() => { setCurrentPage('landing'); setAdminPanelOpen(false); }} className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1 ${currentPage === 'landing' ? 'bg-white shadow text-[var(--primary)]' : 'text-slate-500 hover:bg-white/50'}`}><Home size={14} /> Home</button><button onClick={() => { setCurrentPage('thankyou'); setAdminPanelOpen(false); }} className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1 ${currentPage === 'thankyou' ? 'bg-white shadow text-[var(--primary)]' : 'text-slate-500 hover:bg-white/50'}`}><CheckCircle size={14} /> Thank You</button></div>
                                     <button onClick={() => { setCurrentPage('admin-dashboard'); fetchLeads(); setAdminPanelOpen(false); }} className="w-full bg-[var(--primary)] text-white py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-sm shadow-md hover:brightness-110 mb-4"><Users size={16} /> Manage Student Leads</button>
-                                    
                                     <div><label className="text-xs font-bold text-slate-400">Primary Color</label><input type="color" value={settings.theme.primary} onChange={(e) => saveSettings({ ...settings, theme: { ...settings.theme, primary: e.target.value } })} className="w-full h-8 rounded cursor-pointer mt-1" /></div>
                                     <div><label className="text-xs font-bold text-slate-400">Accent Color</label><input type="color" value={settings.theme.accent} onChange={(e) => saveSettings({ ...settings, theme: { ...settings.theme, accent: e.target.value } })} className="w-full h-8 rounded cursor-pointer mt-1" /></div>
                                     <div><label className="text-xs font-bold text-slate-400">WhatsApp Link</label><input type="text" value={settings.socialLinks.whatsapp} onChange={(e) => saveSettings({ ...settings, socialLinks: { ...settings.socialLinks, whatsapp: e.target.value } })} className="w-full text-xs p-2 border rounded mt-1" /></div>
@@ -341,9 +268,7 @@
                                     <div className="flex gap-4"><div className="bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-200"><span className="block text-xs text-slate-400 font-bold uppercase">Total Leads</span><span className="text-xl font-bold text-[var(--primary)]">{leads.length}</span></div><button onClick={() => setCurrentPage('landing')} className="px-4 py-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 text-slate-700 font-medium flex items-center gap-2"><ArrowLeft size={16} /> Back to Site</button></div>
                                 </div>
                                 <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-                                    {isLoadingLeads ? <div className="p-12 text-center text-slate-500">Loading leads...</div> : 
-                                        <div className="overflow-x-auto"><table className="w-full text-left border-collapse"><thead><tr className="bg-slate-100 border-b border-slate-200"><th className="p-4 text-slate-600 text-sm">Name</th><th className="p-4 text-slate-600 text-sm">Contact</th><th className="p-4 text-slate-600 text-sm">Date</th><th className="p-4 text-slate-600 text-sm text-right">Actions</th></tr></thead><tbody>{leads.map((lead) => (<tr key={lead.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="p-4 font-medium">{lead.name}</td><td className="p-4 text-sm"><span>{lead.email}</span><br/><span className="text-xs text-slate-400">{lead.phone}</span></td><td className="p-4 text-sm text-slate-500">{new Date(lead.registeredAt).toLocaleDateString()}</td><td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditLead(lead)} className="p-2 text-blue-600 hover:bg-blue-50 rounded"><Edit2 size={16} /></button><button onClick={() => handleDeleteLead(lead.id)} className="p-2 text-red-600 hover:bg-red-50 rounded"><Trash2 size={16} /></button></div></td></tr>))}</tbody></table></div>
-                                    }
+                                    {isLoadingLeads ? <div className="p-12 text-center text-slate-500">Loading leads...</div> : <div className="overflow-x-auto"><table className="w-full text-left border-collapse"><thead><tr className="bg-slate-100 border-b border-slate-200"><th className="p-4 text-slate-600 text-sm">Name</th><th className="p-4 text-slate-600 text-sm">Contact</th><th className="p-4 text-slate-600 text-sm">Date</th><th className="p-4 text-slate-600 text-sm text-right">Actions</th></tr></thead><tbody>{leads.map((lead) => (<tr key={lead.id} className="border-b border-slate-100 hover:bg-slate-50"><td className="p-4 font-medium">{lead.name}</td><td className="p-4 text-sm"><span>{lead.email}</span><br/><span className="text-xs text-slate-400">{lead.phone}</span></td><td className="p-4 text-sm text-slate-500">{new Date(lead.registeredAt).toLocaleDateString()}</td><td className="p-4 text-right"><div className="flex justify-end gap-2"><button onClick={() => handleEditLead(lead)} className="p-2 text-blue-600 hover:bg-blue-50 rounded"><Edit2 size={16} /></button><button onClick={() => handleDeleteLead(lead.id)} className="p-2 text-red-600 hover:bg-red-50 rounded"><Trash2 size={16} /></button></div></td></tr>))}</tbody></table></div>}
                                 </div>
                             </div>
                         </div>
@@ -351,21 +276,8 @@
                         <div className="min-h-screen py-12 px-6 flex flex-col items-center justify-center bg-[var(--primary)] text-white relative overflow-hidden animate-fade-in">
                             <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
                             <div className="max-w-4xl w-full bg-white text-slate-900 rounded-3xl shadow-2xl overflow-hidden relative z-10">
-                                <div className="bg-[var(--primary)] p-10 text-center relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
-                                    <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl ring-4 ring-green-400/30 animate-bounce"><CheckCircle className="text-white" size={48} /></div>
-                                    <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2">Registration Successful!</h1>
-                                    <p className="text-blue-100 text-lg">Your seat for the webinar has been reserved.</p>
-                                </div>
-                                <div className="p-8 md:p-12">
-                                    <div className="grid md:grid-cols-2 gap-12">
-                                        <div className="flex flex-col justify-center"><h3 className="font-bold text-xl text-[var(--primary)] mb-4 flex items-center gap-2"><Video size={20} className="text-[var(--accent)]"/> Watch this first</h3><div className="aspect-video rounded-2xl overflow-hidden shadow-lg border border-slate-200"><CustomVideoPlayer videoSource={settings.videoConfig} /></div></div>
-                                        <div className="flex flex-col justify-center"><h3 className="font-bold text-xl text-[var(--primary)] mb-6">Next Steps:</h3><div className="space-y-6">
-                                            <div className="flex gap-4"><div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">1</div><div><p className="font-medium text-slate-800">Join the WhatsApp Group</p><a href={settings.socialLinks.whatsapp} target="_blank" className="inline-flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 rounded-lg font-bold hover:brightness-110 shadow-md shadow-green-200 mt-2" aria-label="Join WhatsApp"><MessageCircle size={18} /> Join Group</a></div></div>
-                                            <div className="flex gap-4"><div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">2</div><div><p className="font-medium text-slate-800">Follow us for Updates</p><div className="flex gap-2 mt-2"><a href={settings.socialLinks.instagram} target="_blank" className="p-2 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white rounded-lg hover:opacity-90 shadow-sm" aria-label="Instagram"><Instagram size={20} /></a><a href={settings.socialLinks.facebook} target="_blank" className="p-2 bg-[#1877F2] text-white rounded-lg hover:brightness-110 shadow-sm" aria-label="Facebook"><Facebook size={20} /></a><a href={settings.socialLinks.telegram} target="_blank" className="p-2 bg-[#0088cc] text-white rounded-lg hover:brightness-110 shadow-sm" aria-label="Telegram"><Send size={20} /></a></div></div></div>
-                                        </div></div>
-                                    </div>
-                                </div>
+                                <div className="bg-[var(--primary)] p-10 text-center relative overflow-hidden"><div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div><div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl ring-4 ring-green-400/30 animate-bounce"><CheckCircle className="text-white" size={48} /></div><h1 className="text-3xl md:text-4xl font-extrabold text-white mb-2">Registration Successful!</h1><p className="text-blue-100 text-lg">Your seat for the webinar has been reserved.</p></div>
+                                <div className="p-8 md:p-12"><div className="grid md:grid-cols-2 gap-12"><div className="flex flex-col justify-center"><h3 className="font-bold text-xl text-[var(--primary)] mb-4 flex items-center gap-2"><Video size={20} className="text-[var(--accent)]"/> Watch this first</h3><div className="aspect-video rounded-2xl overflow-hidden shadow-lg border border-slate-200"><CustomVideoPlayer videoSource={settings.videoConfig} /></div></div><div className="flex flex-col justify-center"><h3 className="font-bold text-xl text-[var(--primary)] mb-6">Next Steps:</h3><div className="space-y-6"><div className="flex gap-4"><div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">1</div><div><p className="font-medium text-slate-800">Join the WhatsApp Group</p><a href={settings.socialLinks.whatsapp} target="_blank" className="inline-flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 rounded-lg font-bold hover:brightness-110 shadow-md shadow-green-200 mt-2" aria-label="Join WhatsApp"><MessageCircle size={18} /> Join Group</a></div></div><div className="flex gap-4"><div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">2</div><div><p className="font-medium text-slate-800">Follow us for Updates</p><div className="flex gap-2 mt-2"><a href={settings.socialLinks.instagram} target="_blank" className="p-2 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white rounded-lg hover:opacity-90 shadow-sm" aria-label="Instagram"><Instagram size={20} /></a><a href={settings.socialLinks.facebook} target="_blank" className="p-2 bg-[#1877F2] text-white rounded-lg hover:brightness-110 shadow-sm" aria-label="Facebook"><Facebook size={20} /></a><a href={settings.socialLinks.telegram} target="_blank" className="p-2 bg-[#0088cc] text-white rounded-lg hover:brightness-110 shadow-sm" aria-label="Telegram"><Send size={20} /></a></div></div></div></div></div></div></div>
                             </div>
                         </div>
                     ) : (
@@ -381,24 +293,15 @@
                             </section>
 
                             <section className="py-24 px-6 bg-white relative z-20 -mt-10 rounded-t-[40px]">
-                                <div className="max-w-6xl mx-auto"><div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-4">Why This MPSC/UPSC Webinar is Mandatory</h2><div className="w-24 h-1.5 bg-[var(--accent)] mx-auto rounded-full"></div></div>
-                                <div className="grid md:grid-cols-3 gap-8">
-                                    {[ { icon: <BookOpen className="text-[var(--accent)]" size={32} />, title: "Decoding the Syllabus", desc: "Understand exactly what the MPSC/UPSC Commission expects in 2025." }, { icon: <Clock className="text-[var(--accent)]" size={32} />, title: "Time-Blocking Strategy", desc: "Scientific routine management for working professionals and students." }, { icon: <Award className="text-[var(--accent)]" size={32} />, title: "The Framework Method", desc: "Draft high-scoring descriptive answers in under 8 minutes." } ].map((item, i) => (<div key={i} className="p-8 rounded-2xl bg-slate-50 hover:shadow-xl transition-all border border-slate-100 hover:border-[var(--accent)]"><div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm">{item.icon}</div><h3 className="text-xl font-bold text-[var(--primary)] mb-3">{item.title}</h3><p className="text-slate-600">{item.desc}</p></div>))}
-                                </div></div>
+                                <div className="max-w-6xl mx-auto"><div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold text-[var(--primary)] mb-4">Why This MPSC/UPSC Webinar is Mandatory</h2><div className="w-24 h-1.5 bg-[var(--accent)] mx-auto rounded-full"></div></div><div className="grid md:grid-cols-3 gap-8">{[{ icon: <BookOpen className="text-[var(--accent)]" size={32} />, title: "Decoding the Syllabus", desc: "Understand exactly what the MPSC/UPSC Commission expects in 2025." }, { icon: <Clock className="text-[var(--accent)]" size={32} />, title: "Time-Blocking Strategy", desc: "Scientific routine management for working professionals and students." }, { icon: <Award className="text-[var(--accent)]" size={32} />, title: "The Framework Method", desc: "Draft high-scoring descriptive answers in under 8 minutes." }].map((item, i) => (<div key={i} className="p-8 rounded-2xl bg-slate-50 hover:shadow-xl transition-all border border-slate-100 hover:border-[var(--accent)]"><div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm">{item.icon}</div><h3 className="text-xl font-bold text-[var(--primary)] mb-3">{item.title}</h3><p className="text-slate-600">{item.desc}</p></div>))}</div></div>
                             </section>
 
                             <section className="py-24 px-6 bg-[var(--primary)] text-white">
-                                <div className="max-w-6xl mx-auto"><div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Webinar Agenda & Syllabus Breakdown</h2><p className="text-slate-300 text-lg">What will you learn in this FREE UPSC/MPSC Webinar?</p><div className="w-24 h-1.5 bg-[var(--accent)] mx-auto rounded-full mt-4"></div></div>
-                                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                    {[ { id: 1, text: "What is UPSC/MPSC? A detailed analysis for beginners." }, { id: 2, text: "Posts under UPSC/MPSC – Eligibility and qualifications required." }, { id: 3, text: "Can UPSC CSE & MPSC Rajyaseva be prepared together?" }, { id: 4, text: "How many months of study are required to crack UPSC/MPSC?" }, { id: 5, text: "Complete analysis of UPSC/MPSC syllabus 2025." }, { id: 6, text: "Common obstacles faced at the beginning of preparation & their solutions." }, { id: 7, text: "Should you prepare in Marathi or English medium?" }, { id: 8, text: "Which books to start with for MPSC Combine & subject focus areas." } ].map((item) => (<div key={item.id} className="bg-white/10 backdrop-blur-md border border-white/10 p-6 rounded-2xl hover:bg-white/20 transition-all group"><div className="w-10 h-10 rounded-full bg-[var(--accent)] text-[var(--primary)] font-bold flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">{item.id}</div><p className="font-medium text-slate-100 leading-relaxed">{item.text}</p></div>))}
-                                </div></div>
+                                <div className="max-w-6xl mx-auto"><div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Webinar Agenda & Syllabus Breakdown</h2><p className="text-slate-300 text-lg">What will you learn in this FREE UPSC/MPSC Webinar?</p><div className="w-24 h-1.5 bg-[var(--accent)] mx-auto rounded-full mt-4"></div></div><div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">{[{ id: 1, text: "What is UPSC/MPSC? A detailed analysis for beginners." }, { id: 2, text: "Posts under UPSC/MPSC – Eligibility and qualifications required." }, { id: 3, text: "Can UPSC CSE & MPSC Rajyaseva be prepared together?" }, { id: 4, text: "How many months of study are required to crack UPSC/MPSC?" }, { id: 5, text: "Complete analysis of UPSC/MPSC syllabus 2025." }, { id: 6, text: "Common obstacles faced at the beginning of preparation & their solutions." }, { id: 7, text: "Should you prepare in Marathi or English medium?" }, { id: 8, text: "Which books to start with for MPSC Combine & subject focus areas." }].map((item) => (<div key={item.id} className="bg-white/10 backdrop-blur-md border border-white/10 p-6 rounded-2xl hover:bg-white/20 transition-all group"><div className="w-10 h-10 rounded-full bg-[var(--accent)] text-[var(--primary)] font-bold flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">{item.id}</div><p className="font-medium text-slate-100 leading-relaxed">{item.text}</p></div>))}</div></div>
                             </section>
 
                             <section className="py-24 px-6 bg-slate-900 text-white border-t border-slate-800">
-                                <div className="max-w-6xl mx-auto"><div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold mb-4">The 5 Secrets of Success for Competitive Exams</h2><div className="w-24 h-1.5 bg-[var(--accent)] mx-auto rounded-full"></div></div>
-                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                    {[ {icon: <Zap size={32} />, title: "Secret 1", desc: "UPSC/MPSC doesn't need subject experts; it needs great administrators."}, {icon: <Scale size={32} />, title: "Secret 2", desc: "Balance between conceptual clarity & memorisation is the key."}, {icon: <Target size={32} />, title: "Secret 3", desc: "Minimum Material, Maximum Revision is the real success mantra."}, {icon: <FileText size={32} />, title: "Secret 4", desc: "Previous year papers are a must to understand the exam."}, {icon: <Brain size={32} />, title: "Secret 5", desc: "Focus on conceptual learning, not just finishing books."} ].map((secret, i) => (<div key={i} className={`bg-slate-800 p-8 rounded-2xl border-l-4 border-[var(--accent)] hover:translate-y-[-5px] transition-transform ${i>=3 ? 'md:col-span-1 lg:col-span-1.5' : ''}`}><div className="mb-4 text-[var(--accent)]">{secret.icon}</div><h3 className="text-xl font-bold mb-2">{secret.title}</h3><p className="text-slate-300">{secret.desc}</p></div>))}
-                                </div></div>
+                                <div className="max-w-6xl mx-auto"><div className="text-center mb-16"><h2 className="text-3xl md:text-4xl font-bold mb-4">The 5 Secrets of Success for Competitive Exams</h2><div className="w-24 h-1.5 bg-[var(--accent)] mx-auto rounded-full"></div></div><div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">{[{icon: <Zap size={32} />, title: "Secret 1", desc: "UPSC/MPSC doesn't need subject experts; it needs great administrators."}, {icon: <Scale size={32} />, title: "Secret 2", desc: "Balance between conceptual clarity & memorisation is the key."}, {icon: <Target size={32} />, title: "Secret 3", desc: "Minimum Material, Maximum Revision is the real success mantra."}, {icon: <FileText size={32} />, title: "Secret 4", desc: "Previous year papers are a must to understand the exam."}, {icon: <Brain size={32} />, title: "Secret 5", desc: "Focus on conceptual learning, not just finishing books."}].map((secret, i) => (<div key={i} className={`bg-slate-800 p-8 rounded-2xl border-l-4 border-[var(--accent)] hover:translate-y-[-5px] transition-transform ${i>=3 ? 'md:col-span-1 lg:col-span-1.5' : ''}`}><div className="mb-4 text-[var(--accent)]">{secret.icon}</div><h3 className="text-xl font-bold mb-2">{secret.title}</h3><p className="text-slate-300">{secret.desc}</p></div>))}</div></div>
                             </section>
 
                             <section className="py-24 px-6 bg-white">
