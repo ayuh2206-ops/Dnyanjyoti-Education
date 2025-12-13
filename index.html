@@ -189,7 +189,7 @@
                     )}
                     {showControls && videoSource.src && (
                         <div className="absolute inset-0 bg-black/40 flex flex-col justify-between p-6 transition-opacity duration-300">
-                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><button onClick={togglePlay} className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center pointer-events-auto hover:scale-110 transition-transform"><{isPlaying ? Pause : Play} className="fill-white text-white ml-1" /></button></div>
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><button onClick={togglePlay} className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center pointer-events-auto hover:scale-110 transition-transform">{isPlaying ? <Pause className="fill-white text-white ml-1" /> : <Play className="fill-white text-white ml-1" />}</button></div>
                             <div className="mt-auto pointer-events-none"><p className="text-white font-bold text-lg drop-shadow-md">{videoSource.title}</p></div>
                         </div>
                     )}
