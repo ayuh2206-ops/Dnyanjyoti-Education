@@ -87,24 +87,6 @@
 
     <!-- Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- Schema Markup -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "EducationEvent",
-      "name": "MPSC/UPSC Strategy Webinar",
-      "description": "A free webinar on the new MPSC/UPSC descriptive pattern.",
-      "startDate": "2025-12-15T10:00:00+05:30",
-      "endDate": "2025-12-15T12:00:00+05:30",
-      "eventStatus": "https://schema.org/EventScheduled",
-      "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
-      "location": { "@type": "VirtualLocation", "url": "https://dnyanjyoti-education.vercel.app/" },
-      "image": [ "https://www.dnyanjyoti.com/wp-content/uploads/2025/04/MD-Photo.jpg" ],
-      "organizer": { "@type": "Organization", "name": "Dnyanjyoti Education", "url": "https://www.dnyanjyoti.com" },
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR", "availability": "https://schema.org/InStock" }
-    }
-    </script>
 </head>
 <body class="bg-bgBody text-slate-900">
 
@@ -173,87 +155,45 @@
             adminPasskey: 'admin123'
         };
 
-        const translations = {
-            en: {
-                heroTitle1: "Register Now to Guarantee Your",
-                heroTitle2: "Success in UPSC/MPSC Exams!",
-                heroSubtitle: "Master the exact Framework Method used by 350+ Officers to crack MPSC/UPSC.",
-                secureSpot: "Secure Your Spot Free",
-                getStudyMaterial: "Get Free Study Material",
-                whatYouGet: "What You Will Get in the Webinar:",
-                webinarAgenda: "Webinar Agenda & Syllabus Breakdown",
-                webinarAgendaSubtitle: "What will you learn in this FREE UPSC/MPSC Webinar?",
-                fiveSecrets: "The 5 Secrets of Success for Competitive Exams",
-                yourMentor: "Your Mentor",
-                drVishalBio: "Founder & Director of Dnyanjyoti Education. With a heart for students and a mind for strategy, Dr. Vishal has transformed the lives of thousands of aspirants in Pune through precision mentorship.",
-                yearsExp: "Years Experience",
-                officersGuided: "Officers Guided",
-                finalSelections: "Final Selections",
-                centersInPune: "Centers in Pune",
-                studentsAttended: "Students Attended Webinar",
-                whyRegister: "Why Should You Register?",
-                whatWillYouGet: "What Will You Get?",
-                secureYourSeat: "Secure Your Seat",
-                unlockPDF: "Unlock the pre-webinar study PDF immediately.",
-                fullName: "Full Name",
-                emailAddress: "Email Address",
-                phoneNumber: "Phone Number",
-                registerButton: "Register & Unlock PDF",
-                registering: "Registering...",
-                offerText: "By registering, you get a chance to attend this ₹3999/- value Webinar absolutely FREE!",
-                limitedSpots: "Limited spots available for serious aspirants.",
-                registrationSuccess: "Registration Successful!",
-                seatReserved: "Your seat for the webinar has been reserved.",
-                downloadStudyMaterial: "Download Your Study Material",
-                downloadPDFNow: "Download PDF Now",
-                watchFirst: "Watch this first",
-                nextSteps: "Next Steps:",
-                joinWhatsApp: "Join the WhatsApp Group",
-                joinGroup: "Join Group",
-                followUpdates: "Follow us for Updates",
-                quote: "Success isn't about reading more. It's about thinking clearly.",
-                exclusiveWebinar: "Exclusive Webinar Event"
-            },
-            mr: {
-                heroTitle1: "UPSC/MPSC परीक्षेत यशाची",
-                heroTitle2: "हमी देण्यासाठी आता नोंदणी करा!",
-                heroSubtitle: "350+ अधिकाऱ्यांनी MPSC/UPSC क्रॅक करण्यासाठी वापरलेली अचूक फ्रेमवर्क पद्धत शिका.",
-                secureSpot: "मोफत जागा सुरक्षित करा",
-                getStudyMaterial: "मोफत अभ्यास साहित्य मिळवा",
-                whatYouGet: "वेबिनारमध्ये तुम्हाला काय मिळेल:",
-                webinarAgenda: "वेबिनार अजेंडा आणि अभ्यासक्रम विश्लेषण",
-                webinarAgendaSubtitle: "या मोफत UPSC/MPSC वेबिनारमध्ये तुम्ही काय शिकाल?",
-                fiveSecrets: "स्पर्धा परीक्षांमध्ये यशाची ५ गुपिते",
-                yourMentor: "तुमचे मार्गदर्शक",
-                drVishalBio: "दिनज्योती एज्युकेशनचे संस्थापक आणि संचालक. विद्यार्थ्यांसाठी हृदय आणि रणनीतीसाठी मन असलेले, डॉ. विशाल यांनी पुण्यातील हजारो इच्छुकांचे जीवन अचूक मार्गदर्शनाद्वारे बदलले आहे.",
-                yearsExp: "वर्षांचा अनुभव",
-                officersGuided: "अधिकाऱ्यांना मार्गदर्शन",
-                finalSelections: "अंतिम निवड",
-                centersInPune: "पुण्यातील केंद्रे",
-                studentsAttended: "विद्यार्थ्यांनी वेबिनारला उपस्थिती",
-                whyRegister: "तुम्ही का नोंदणी करावी?",
-                whatWillYouGet: "तुम्हाला काय मिळेल?",
-                secureYourSeat: "तुमची जागा सुरक्षित करा",
-                unlockPDF: "वेबिनार-पूर्व अभ्यास PDF त्वरित अनलॉक करा.",
-                fullName: "पूर्ण नाव",
-                emailAddress: "ईमेल पत्ता",
-                phoneNumber: "फोन नंबर",
-                registerButton: "नोंदणी करा आणि PDF अनलॉक करा",
-                registering: "नोंदणी करत आहे...",
-                offerText: "नोंदणी करून, तुम्हाला ₹3999/- किमतीचा वेबिनार पूर्णपणे मोफत उपस्थित राहण्याची संधी मिळेल!",
-                limitedSpots: "गंभीर इच्छुकांसाठी मर्यादित जागा उपलब्ध.",
-                registrationSuccess: "नोंदणी यशस्वी!",
-                seatReserved: "वेबिनारसाठी तुमची जागा राखीव ठेवली आहे.",
-                downloadStudyMaterial: "तुमचे अभ्यास साहित्य डाउनलोड करा",
-                downloadPDFNow: "आता PDF डाउनलोड करा",
-                watchFirst: "हे प्रथम पहा",
-                nextSteps: "पुढील पायऱ्या:",
-                joinWhatsApp: "WhatsApp ग्रुपमध्ये सामील व्हा",
-                joinGroup: "ग्रुपमध्ये सामील व्हा",
-                followUpdates: "अपडेटसाठी आम्हाला फॉलो करा",
-                quote: "यश वाचण्याबद्दल नाही. हे स्पष्टपणे विचार करण्याबद्दल आहे.",
-                exclusiveWebinar: "विशेष वेबिनार कार्यक्रम"
-            }
+        const t = {
+            heroTitle1: "Register Now to Guarantee Your",
+            heroTitle2: "Success in UPSC/MPSC Exams!",
+            heroSubtitle: "Master the exact Framework Method used by 350+ Officers to crack MPSC/UPSC.",
+            secureSpot: "Secure Your Spot Free",
+            getStudyMaterial: "Get Free Study Material",
+            whatYouGet: "What You Will Get in the Webinar:",
+            webinarAgenda: "Webinar Agenda & Syllabus Breakdown",
+            webinarAgendaSubtitle: "What will you learn in this FREE UPSC/MPSC Webinar?",
+            fiveSecrets: "The 5 Secrets of Success for Competitive Exams",
+            yourMentor: "Your Mentor",
+            drVishalBio: "Founder & Director of Dnyanjyoti Education. With a heart for students and a mind for strategy, Dr. Vishal has transformed the lives of thousands of aspirants in Pune through precision mentorship.",
+            yearsExp: "Years Experience",
+            officersGuided: "Officers Guided",
+            finalSelections: "Final Selections",
+            centersInPune: "Centers in Pune",
+            studentsAttended: "Students Attended Webinar",
+            whyRegister: "Why Should You Register?",
+            whatWillYouGet: "What Will You Get?",
+            secureYourSeat: "Secure Your Seat",
+            unlockPDF: "Unlock the pre-webinar study PDF immediately.",
+            fullName: "Full Name",
+            emailAddress: "Email Address",
+            phoneNumber: "Phone Number",
+            registerButton: "Register & Unlock PDF",
+            registering: "Registering...",
+            offerText: "By registering, you get a chance to attend this ₹3999/- value Webinar absolutely FREE!",
+            limitedSpots: "Limited spots available for serious aspirants.",
+            registrationSuccess: "Registration Successful!",
+            seatReserved: "Your seat for the webinar has been reserved.",
+            downloadStudyMaterial: "Download Your Study Material",
+            downloadPDFNow: "Download PDF Now",
+            watchFirst: "Watch this first",
+            nextSteps: "Next Steps:",
+            joinWhatsApp: "Join the WhatsApp Group",
+            joinGroup: "Join Group",
+            followUpdates: "Follow us for Updates",
+            quote: "Success isn't about reading more. It's about thinking clearly.",
+            exclusiveWebinar: "Exclusive Webinar Event"
         };
 
         const CustomVideoPlayer = ({ videoSource }) => {
@@ -293,10 +233,9 @@
             const [dbPasskey, setDbPasskey] = useState(null); 
             const [leads, setLeads] = useState([]);
             const [isLoadingLeads, setIsLoadingLeads] = useState(false);
-            const [language, setLanguage] = useState('en');
-            const [showLanguageModal, setShowLanguageModal] = useState(true);
-
-            const t = translations[language];
+            
+            // Hardcoded Language for Main Page
+            const PAGE_LANG = 'en';
 
             useEffect(() => {
                 if (isOffline || !db) return;
@@ -319,11 +258,20 @@
                 if (isOffline) return;
                 setIsLoadingLeads(true);
                 try {
+                    // Fetch all then filter in memory to avoid index requirement errors on new fields
                     const q = firestoreFuncs.query(firestoreFuncs.collection(db, "leads"), firestoreFuncs.orderBy("registeredAt", "desc"));
                     const querySnapshot = await firestoreFuncs.getDocs(q);
-                    setLeads(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+                    const allLeads = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    
+                    // Filter: Show English leads OR leads with no language (legacy)
+                    setLeads(allLeads.filter(l => l.language === 'en' || !l.language));
                 } catch (e) { 
-                    try { const q = firestoreFuncs.collection(db, "leads"); const querySnapshot = await firestoreFuncs.getDocs(q); setLeads(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))); } catch(err) { console.error(err); }
+                    try { 
+                        const q = firestoreFuncs.collection(db, "leads"); 
+                        const querySnapshot = await firestoreFuncs.getDocs(q); 
+                        const allLeads = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        setLeads(allLeads.filter(l => l.language === 'en' || !l.language));
+                    } catch(err) { console.error(err); }
                 } finally { setIsLoadingLeads(false); }
             };
 
@@ -354,51 +302,21 @@
                 e.preventDefault(); setIsSubmitting(true);
                 if (isOffline) { setTimeout(() => { setCurrentPage('thankyou'); window.scrollTo(0,0); setIsSubmitting(false); }, 1000); return; }
                 const formData = new FormData(e.currentTarget);
-                const leadData = { name: formData.get('fullName'), email: formData.get('email'), phone: formData.get('phone'), registeredAt: new Date().toISOString(), source: 'web_v1' };
+                // Tagging lead with language: 'en'
+                const leadData = { 
+                    name: formData.get('fullName'), 
+                    email: formData.get('email'), 
+                    phone: formData.get('phone'), 
+                    registeredAt: new Date().toISOString(), 
+                    source: 'web_en',
+                    language: 'en'
+                };
                 try { await firestoreFuncs.addDoc(firestoreFuncs.collection(db, "leads"), leadData); setTimeout(() => { setCurrentPage('thankyou'); window.scrollTo(0,0); setIsSubmitting(false); }, 500); } catch (error) { alert("Failed."); setIsSubmitting(false); }
             };
 
             return (
                 <div style={{ '--primary': settings.theme.primary, '--accent': settings.theme.accent }} className="animate-fade-in font-sans">
-                    {showLanguageModal && (
-                        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
-                            <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 md:p-10 relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]"></div>
-                                <div className="text-center mb-8">
-                                    <h2 className="text-2xl md:text-3xl font-bold text-[var(--primary)] mb-3">Choose Your Language</h2>
-                                    <p className="text-slate-600 mb-2">भाषा निवडा</p>
-                                    <p className="text-sm text-slate-500">Select your preferred language for the webinar</p>
-                                </div>
-                                <div className="space-y-4">
-                                    <button 
-                                        onClick={() => { setLanguage('en'); setShowLanguageModal(false); }}
-                                        className="w-full p-5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3"
-                                    >
-                                        <span className="text-2xl">🇬🇧</span>
-                                        <span>Continue in English</span>
-                                    </button>
-                                    <button 
-                                        onClick={() => { setLanguage('mr'); setShowLanguageModal(false); }}
-                                        className="w-full p-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 flex items-center justify-center gap-3"
-                                    >
-                                        <span className="text-2xl">🇮🇳</span>
-                                        <span>मराठीमध्ये सुरू ठेवा</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                     
-                    <div className="fixed bottom-6 left-6 z-50">
-                        <button 
-                            onClick={() => setShowLanguageModal(true)}
-                            className="p-3 bg-white text-slate-700 rounded-full shadow-xl border border-slate-200 hover:shadow-2xl transition-all flex items-center gap-2 font-medium text-sm"
-                        >
-                            <span className="text-xl">{language === 'en' ? '🇬🇧' : '🇮🇳'}</span>
-                            <span className="hidden sm:inline">{language === 'en' ? 'English' : 'मराठी'}</span>
-                        </button>
-                    </div>
-
                     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
                         <button onClick={() => { if(isAdmin) setAdminPanelOpen(!adminPanelOpen); else { setShowLoginModal(true); setLoginPasskey(''); setIsSettingNewPasskey(!dbPasskey); } }} className={`p-3 rounded-full shadow-xl border transition-all ${isAdmin ? 'bg-slate-900 text-white' : 'bg-white text-slate-400 hover:text-[var(--accent)]'}`}>{isAdmin ? <Settings size={24} /> : <Lock size={20} />}</button>
                         {showLoginModal && (
@@ -414,7 +332,7 @@
                                 <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
                                     <div className="flex justify-between items-center pb-2 border-b border-slate-100"><span className="text-xs font-bold text-slate-400 uppercase">Site Settings</span><button onClick={resetSettings} className="flex items-center gap-1 text-[10px] bg-red-50 text-red-600 px-2 py-1 rounded hover:bg-red-100"><RotateCcw size={10} /> Reset</button></div>
                                     <div className="bg-slate-50 p-2 rounded-lg mb-4 flex gap-2"><button onClick={() => { setCurrentPage('landing'); setAdminPanelOpen(false); }} className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1 ${currentPage === 'landing' ? 'bg-white shadow text-[var(--primary)]' : 'text-slate-500 hover:bg-white/50'}`}><Home size={14} /> Home</button><button onClick={() => { setCurrentPage('thankyou'); setAdminPanelOpen(false); }} className={`flex-1 py-2 text-xs font-bold rounded-lg flex items-center justify-center gap-1 ${currentPage === 'thankyou' ? 'bg-white shadow text-[var(--primary)]' : 'text-slate-500 hover:bg-white/50'}`}><CheckCircle size={14} /> Thank You</button></div>
-                                    <button onClick={() => { setCurrentPage('admin-dashboard'); fetchLeads(); setAdminPanelOpen(false); }} className="w-full bg-[var(--primary)] text-white py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-sm shadow-md hover:brightness-110 mb-4"><Users size={16} /> Manage Student Leads</button>
+                                    <button onClick={() => { setCurrentPage('admin-dashboard'); fetchLeads(); setAdminPanelOpen(false); }} className="w-full bg-[var(--primary)] text-white py-3 rounded-xl flex items-center justify-center gap-2 font-bold text-sm shadow-md hover:brightness-110 mb-4"><Users size={16} /> Manage Student Leads (English)</button>
                                     <div><label className="text-xs font-bold text-slate-400">Primary Color</label><input type="color" value={settings.theme.primary} onChange={(e) => saveSettings({ ...settings, theme: { ...settings.theme, primary: e.target.value } })} className="w-full h-8 rounded cursor-pointer mt-1" /></div>
                                     <div><label className="text-xs font-bold text-slate-400">Accent Color</label><input type="color" value={settings.theme.accent} onChange={(e) => saveSettings({ ...settings, theme: { ...settings.theme, accent: e.target.value } })} className="w-full h-8 rounded cursor-pointer mt-1" /></div>
                                     <div><label className="text-xs font-bold text-slate-400">WhatsApp Link</label><input type="text" value={settings.socialLinks.whatsapp} onChange={(e) => saveSettings({ ...settings, socialLinks: { ...settings.socialLinks, whatsapp: e.target.value } })} className="w-full text-xs p-2 border rounded mt-1" /></div>
@@ -433,7 +351,7 @@
                         <div className="min-h-screen bg-slate-50 p-4 md:p-8">
                             <div className="max-w-6xl mx-auto">
                                 <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                                    <div><h1 className="text-2xl font-bold text-[var(--primary)] flex items-center gap-2"><Users className="text-[var(--accent)]" /> Student Registrations</h1><p className="text-slate-500">Manage all webinar leads here.</p></div>
+                                    <div><h1 className="text-2xl font-bold text-[var(--primary)] flex items-center gap-2"><Users className="text-[var(--accent)]" /> Student Registrations (English Page)</h1><p className="text-slate-500">Manage all English webinar leads here.</p></div>
                                     <div className="flex gap-4"><div className="bg-white px-4 py-2 rounded-lg shadow-sm border border-slate-200"><span className="block text-xs text-slate-400 font-bold uppercase">Total Leads</span><span className="text-xl font-bold text-[var(--primary)]">{leads.length}</span></div><button onClick={() => setCurrentPage('landing')} className="px-4 py-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 text-slate-700 font-medium flex items-center gap-2"><ArrowLeft size={16} /> Back to Site</button></div>
                                 </div>
                                 <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
@@ -469,6 +387,7 @@
                                         </div>
                                     )}
                                     <div className="grid md:grid-cols-2 gap-12"><div className="flex flex-col justify-center"><h3 className="font-bold text-xl text-[var(--primary)] mb-4 flex items-center gap-2"><Video size={20} className="text-[var(--accent)]"/> {t.watchFirst}</h3><div className="aspect-video rounded-2xl overflow-hidden shadow-lg border border-slate-200"><CustomVideoPlayer videoSource={settings.videoConfig} /></div></div><div className="flex flex-col justify-center"><h3 className="font-bold text-xl text-[var(--primary)] mb-6">{t.nextSteps}</h3><div className="space-y-6"><div className="flex gap-4"><div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">1</div><div><p className="font-medium text-slate-800">{t.joinWhatsApp}</p><a href={settings.socialLinks.whatsapp} target="_blank" className="inline-flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 rounded-lg font-bold hover:brightness-110 shadow-md shadow-green-200 mt-2" aria-label="Join WhatsApp"><MessageCircle size={18} /> {t.joinGroup}</a></div></div><div className="flex gap-4"><div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0">2</div><div><p className="font-medium text-slate-800">{t.followUpdates}</p><div className="flex gap-2 mt-2"><a href={settings.socialLinks.instagram} target="_blank" className="p-2 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white rounded-lg hover:opacity-90 shadow-sm" aria-label="Instagram"><Instagram size={20} /></a><a href={settings.socialLinks.facebook} target="_blank" className="p-2 bg-[#1877F2] text-white rounded-lg hover:brightness-110 shadow-sm" aria-label="Facebook"><Facebook size={20} /></a><a href={settings.socialLinks.telegram} target="_blank" className="p-2 bg-[#0088cc] text-white rounded-lg hover:brightness-110 shadow-sm" aria-label="Telegram"><Send size={20} /></a></div></div></div></div></div></div></div>
+                                </div>
                             </div>
                         </div>
                     ) : (
