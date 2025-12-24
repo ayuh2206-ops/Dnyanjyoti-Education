@@ -140,29 +140,54 @@
         let firestoreFuncs = {};
 
         async function initApp() {
+            console.log("🚀 Step 1: Starting initApp...");
+            
             try {
-                console.log("Initializing Firebase...");
+                console.log("🚀 Step 2: Importing Firebase modules...");
                 
                 // Import Firebase
                 const { initializeApp } = await import('firebase/app');
+                console.log("✅ Step 3: Firebase app module loaded");
+                
                 const { getFirestore } = await import('firebase/firestore');
+                console.log("✅ Step 4: Firestore module loaded");
                 
                 // Initialize Firebase
+                console.log("🚀 Step 5: Initializing Firebase app...");
                 const app = initializeApp(FIREBASE_CONFIG);
                 db = getFirestore(app);
+                console.log("✅ Step 6: Firebase initialized");
                 
                 // Import Firestore functions
+                console.log("🚀 Step 7: Loading Firestore functions...");
                 const fs = await import('firebase/firestore');
                 firestoreFuncs = { ...fs };
+                console.log("✅ Step 8: Firestore functions loaded");
                 
-                console.log("Firebase initialized successfully");
+                console.log("🎉 SUCCESS: All Firebase modules loaded, rendering app...");
                 renderReactApp(false);
             } catch (err) {
-                console.error("Firebase Load Error:", err);
-                console.log("Starting in Offline Mode");
+                console.error("❌ Firebase Load Error:", err);
+                console.log("⚠️ Starting in Offline Mode");
                 renderReactApp(true);
             }
         }
+        
+        console.log("🚀 Script loaded, calling initApp...");
+        initApp().catch(err => {
+            console.error("❌ Init error:", err);
+            console.log("⚠️ Forcing offline mode due to init failure");
+            renderReactApp(true);
+        });
+        
+        // EMERGENCY TIMEOUT: If nothing happens in 5 seconds, force render
+        setTimeout(() => {
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                console.error("⏰ EMERGENCY: 5 second timeout reached, forcing app render");
+                renderReactApp(true);
+            }
+        }, 5000);
 
         const DEFAULT_SETTINGS = {
             theme: { primary: '#002244', accent: '#EA580C', background: '#F8FAFC' },
@@ -615,12 +640,6 @@
                 if (loadingScreen) loadingScreen.remove();
             }
         }
-
-        // Start the app
-        initApp().catch(err => {
-            console.error("Init error:", err);
-            renderReactApp(true);
-        });
 
         // Global error handler
         window.onerror = function(message, source, lineno, colno, error) {
