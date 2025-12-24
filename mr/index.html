@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://www.dnyanjyoti.com">
     
     <!-- 2. Performance: Preload Hero Image (LCP Optimization) -->
-    <link rel="preload" as="image" href="https://res.cloudinary.com/dkkkjtoa9/image/upload/v1765638598/image2253_1_ogmcnf.png" fetchpriority="high">
+    <!-- <link rel="preload" as="image" href="https://res.cloudinary.com/dkkkjtoa9/image/upload/v1765638598/image2253_1_ogmcnf.png" fetchpriority="high"> -->
 
     <!-- SEO Meta Tags -->
     <title>MPSC/UPSC Coaching Pune | Free Webinar by Dnyanjyoti Education</title>
@@ -92,7 +92,8 @@
     }
     </script>
 
-    <!-- Babel -->
+    <!-- Babel - For Development Only -->
+    <!-- For production, precompile JSX: https://babeljs.io/docs/setup -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-bgBody text-slate-900">
@@ -583,19 +584,35 @@
                 const root = createRoot(document.getElementById('root'));
                 root.render(<App isOffline={isOffline} />);
                 
-                // Remove loading screen after successful render
-                setTimeout(() => {
+                // Remove loading screen after successful render - GUARANTEED
+                const removeLoadingScreen = () => {
                     const loadingScreen = document.getElementById('loading-screen');
                     if (loadingScreen) {
                         loadingScreen.classList.add('fade-out');
                         setTimeout(() => {
-                            loadingScreen.remove();
+                            if (loadingScreen && loadingScreen.parentNode) {
+                                loadingScreen.remove();
+                            }
                         }, 300);
                     }
-                }, 500);
+                };
+                
+                // Try immediate removal
+                setTimeout(removeLoadingScreen, 500);
+                
+                // Fallback - force remove after 2 seconds no matter what
+                setTimeout(() => {
+                    const loadingScreen = document.getElementById('loading-screen');
+                    if (loadingScreen) {
+                        loadingScreen.remove();
+                    }
+                }, 2000);
             } catch (error) {
                 console.error("React render error:", error);
                 document.getElementById('root').innerHTML = '<div style="padding: 20px; text-align: center;"><h2>Failed to load application</h2><p>' + error.message + '</p></div>';
+                // Remove loading screen even on error
+                const loadingScreen = document.getElementById('loading-screen');
+                if (loadingScreen) loadingScreen.remove();
             }
         }
 
